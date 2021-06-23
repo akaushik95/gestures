@@ -164,7 +164,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
     }
 
     fun cancelAction(){
-
+        Log.d("Status"," Canceled!!!")
     }
 }
 
