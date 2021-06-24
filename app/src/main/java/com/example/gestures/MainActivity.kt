@@ -1,17 +1,20 @@
 package com.example.gestures
 
 import android.app.AlertDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(),View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        btn_goToM2.setOnClickListener(this)
         val fab: View = findViewById(R.id.fab)
 
         fab.setOnClickListener(View.OnClickListener {
@@ -41,4 +44,16 @@ class MainActivity : BaseActivity() {
             alertDialog.show()
         })
     }
-}
+
+    override fun onClick(v: View?) {
+        when (v?.id) {
+
+            R.id.btn_goToM2 -> {
+                val intent = Intent(this, MainActivity2::class.java)
+                startActivity(intent)
+            }
+
+        }
+    }
+    }
+

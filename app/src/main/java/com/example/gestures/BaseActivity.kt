@@ -1,19 +1,22 @@
 package com.example.gestures
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GestureDetectorCompat
 
-open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
+    {
 
     private lateinit var mDetector: GestureDetectorCompat
 
-    var toggle : Boolean = false
+    companion object {var toggle : Boolean = false}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,23 +26,23 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
     }
 
-    override fun onSaveInstanceState(savedInstanceState: Bundle) {
-        Log.d("DEBUG_TAG","Inside onSaveInstanceState")
-        super.onSaveInstanceState(savedInstanceState)
-        // Save UI state changes to the savedInstanceState.
-        // This bundle will be passed to onCreate if the process is
-        // killed and restarted.
-        savedInstanceState.putBoolean("toggle",toggle)
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        Log.d("DEBUG_TAG","Inside onRestoreInstanceState")
-        super.onRestoreInstanceState(savedInstanceState)
-        // Restore UI state from the savedInstanceState.
-        // This bundle has also been passed to onCreate.
-        toggle = savedInstanceState.getBoolean("toggle")
-
-    }
+//    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+//        Log.d("DEBUG_TAG","Inside onSaveInstanceState: $toggle")
+//        super.onSaveInstanceState(savedInstanceState)
+//        // Save UI state changes to the savedInstanceState.
+//        // This bundle will be passed to onCreate if the process is
+//        // killed and restarted.
+//        savedInstanceState.putBoolean("toggle",toggle)
+//    }
+//
+//    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+//        Log.d("DEBUG_TAG","Inside onRestoreInstanceState")
+//        super.onRestoreInstanceState(savedInstanceState)
+//        // Restore UI state from the savedInstanceState.
+//        // This bundle has also been passed to onCreate.
+//        toggle = savedInstanceState.getBoolean("toggle")
+//
+//    }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return if (mDetector.onTouchEvent(event)) {
@@ -87,7 +90,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
         if (toggle == false) {
             builder.setNegativeButton("Start Video") { dialogInterface, which ->
                 Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG).show() //write you recording action here
-                //state saving handled
+                //state saving handled by making toggle static
                 toggle = true
             }
         }
