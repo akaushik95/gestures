@@ -1,6 +1,5 @@
 package com.example.gestures
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
@@ -9,11 +8,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-
 import androidx.core.view.GestureDetectorCompat
-import androidx.core.view.MotionEventCompat
+import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
-
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.data_input.*
 
@@ -32,8 +29,38 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
         realm = Realm.getDefaultInstance()
         btn_submitData.setOnClickListener(this)
         btn_cancel.setOnClickListener(this)
+        val fab: View = findViewById(R.id.fab)
+
+        fab.setOnClickListener(View.OnClickListener {
+            val builder = AlertDialog.Builder(this)
+            //set title for alert dialog
+            builder.setTitle("Select the option")
+            //set message for alert dialog
+            builder.setMessage("ss/video")
+            builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+            //performing positive action
+            builder.setPositiveButton("Screenshot"){dialogInterface, which ->
+                Toast.makeText(applicationContext,"Taking screenshot", Toast.LENGTH_LONG).show()
+            }
+            //performing cancel action
+            builder.setNeutralButton("Cancel"){dialogInterface , which ->
+                Toast.makeText(applicationContext,"clicked cancel\n operation cancel",Toast.LENGTH_LONG).show()
+            }
+            //performing negative action
+            builder.setNegativeButton("Video"){dialogInterface, which ->
+                Toast.makeText(applicationContext,"Recording video",Toast.LENGTH_LONG).show()
+            }
+            // Create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            // Set other dialog properties
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        })
 
     }
+
+
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return if (mDetector.onTouchEvent(event)) {
