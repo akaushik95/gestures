@@ -14,21 +14,18 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.data_input.*
 
-class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
     private lateinit var mDetector: GestureDetectorCompat
-    var realm: Realm? = null
-    val dataModel = BugDataModel()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Realm.init(this)
+
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
-        realm = Realm.getDefaultInstance()
-        btn_submitData.setOnClickListener(this)
-        btn_cancel.setOnClickListener(this)
+
         val fab: View = findViewById(R.id.fab)
 
         fab.setOnClickListener(View.OnClickListener {
@@ -57,6 +54,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
             alertDialog.setCancelable(false)
             alertDialog.show()
         })
+
 
     }
 
@@ -134,7 +132,10 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
     }
 
     override fun onDoubleTap(event: MotionEvent): Boolean {
-        Log.d("DEBUG_TAG", "onDoubleTap: $event")
+//        Log.d("DEBUG_TAG", "onDoubleTap: $event")
+//        return true
+        var dialog=FormFragment()
+        dialog.show(supportFragmentManager,"formFragment")
         return true
     }
 
@@ -148,50 +149,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
         return true
     }
 
-    override fun onClick(v: View?) {
 
-        when (v?.id) {
-
-            R.id.btn_submitData -> {
-                addData()
-            }
-
-            R.id.btn_cancel -> {
-                cancelAction()
-            }
-
-        }
-    }
-
-
-    fun addData() {
-
-        try {
-
-            dataModel.country = edt_country.text.toString()
-            dataModel.summary = edt_summary.text.toString()
-            dataModel.description = edt_description.text.toString()
-
-            realm!!.executeTransaction { realm -> realm.copyToRealm(dataModel) }
-
-            clearFields()
-
-            Log.d("Status","Data Inserted !!!")
-
-        }catch (e:Exception){
-            Log.d("Status","Something went Wrong !!!")
-        }
-    }
-
-    fun clearFields(){
-
-        edt_country.setText("")
-        edt_summary.setText("")
-        edt_description.setText("")
-    }
-
-    fun cancelAction(){
-
-    }
 }
 
