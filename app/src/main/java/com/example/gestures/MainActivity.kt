@@ -7,11 +7,14 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 import androidx.core.view.GestureDetectorCompat
 import androidx.core.view.MotionEventCompat
+import com.google.gson.Gson
 import io.realm.Realm
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -22,16 +25,17 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
     private lateinit var mDetector: GestureDetectorCompat
     var realm: Realm? = null
     val dataModel = BugDataModel()
+    val gson = Gson()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Realm.init(this)
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
         realm = Realm.getDefaultInstance()
         btn_submitData.setOnClickListener(this)
         btn_cancel.setOnClickListener(this)
+        btn_fetchHistory.setOnClickListener(this)
 
     }
 
@@ -129,6 +133,10 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
                 addData()
             }
 
+            R.id.btn_fetchHistory -> {
+                fetchData()
+            }
+
             R.id.btn_cancel -> {
                 cancelAction()
             }
@@ -144,12 +152,20 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
             dataModel.country = edt_country.text.toString()
             dataModel.summary = edt_summary.text.toString()
             dataModel.description = edt_description.text.toString()
+            dataModel.selectType = edt_selectType.text.toString()
+            dataModel.fixingPriority = edt_fixingPriority.text.toString()
+            dataModel.platform = edt_platform.text.toString()
 
             realm!!.executeTransaction { realm -> realm.copyToRealm(dataModel) }
 
-            clearFields()
+            Log.d("Status","dataModel in submit "+dataModel.toString())
+
+            val jsonData = gson.toJson(dataModel)
+            Toast.makeText(applicationContext,jsonData,Toast.LENGTH_LONG).show()
+
 
             Log.d("Status","Data Inserted !!!")
+            clearFields()
 
         }catch (e:Exception){
             Log.d("Status","Something went Wrong !!!")
@@ -161,10 +177,45 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
         edt_country.setText("")
         edt_summary.setText("")
         edt_description.setText("")
+        edt_selectType.setText("")
+        edt_fixingPriority.setText("")
+        edt_platform.setText("")
     }
 
     fun cancelAction(){
         Log.d("Status"," Canceled!!!")
+    }
+
+    fun fetchData(){
+        Log.d("Status","Inside fetchData")
+        try {
+            Log.d("Status","Inside fetchData")
+            val dataModels: List<BugDataModel> =
+                realm!!.where(BugDataModel::class.java).findAll()
+
+            var arrayList = ArrayList<Any>()
+//            arrayList.add("History")
+
+//            val bugsArray = arrayOf("bug1","bug2","bug3")
+            for (i in dataModels.size-1 downTo 0) {
+                Log.d("Status",dataModels[i]
+                    .toString())
+                arrayList.add(dataModels[i])     //gson.toJson(item)
+
+            }
+            val arrayAdapter : ArrayAdapter<*>
+            var bugsHistory = findViewById<ListView>(R.id.listview_history)
+
+            arrayAdapter = ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, arrayList)
+            bugsHistory.adapter = arrayAdapter
+
+            Log.d("Status","Data Fetched !!!")
+
+        } catch (e: Exception) {
+            Log.d("Status","Something went Wrong !!!")
+        }
+
     }
 }
 

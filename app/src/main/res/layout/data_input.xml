@@ -29,4 +29,29 @@
         android:inputType="textAutoCorrect"
         android:hint="Description"/>
 
+    <EditText
+        android:id="@+id/edt_selectType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:inputType="textAutoCorrect"
+        android:hint="Select Type"/>
+
+    <EditText
+        android:id="@+id/edt_fixingPriority"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:inputType="text"
+        android:hint="Fixing Priority"/>
+
+    <EditText
+        android:id="@+id/edt_platform"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:inputType="textAutoCorrect"
+        android:hint="Platform"/>
+
+
 </LinearLayout>
