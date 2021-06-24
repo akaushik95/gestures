@@ -20,23 +20,46 @@ import io.realm.Realm
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.data_input.*
 
-class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
+class MainActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
     private lateinit var mDetector: GestureDetectorCompat
-    var realm: Realm? = null
-    val dataModel = BugDataModel()
-    val gson = Gson()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
-        realm = Realm.getDefaultInstance()
-        btn_submitData.setOnClickListener(this)
-        btn_cancel.setOnClickListener(this)
-        btn_fetchHistory.setOnClickListener(this)
 
+
+        val fab: View = findViewById(R.id.fab)
+
+        fab.setOnClickListener(View.OnClickListener {
+            val builder = AlertDialog.Builder(this)
+            //set title for alert dialog
+            builder.setTitle("Select the option")
+            //set message for alert dialog
+            builder.setMessage("ss/video")
+            builder.setIcon(android.R.drawable.ic_dialog_alert)
+
+            //performing positive action
+            builder.setPositiveButton("Screenshot"){dialogInterface, which ->
+                Toast.makeText(applicationContext,"Taking screenshot", Toast.LENGTH_LONG).show()
+            }
+            //performing cancel action
+            builder.setNeutralButton("Cancel"){dialogInterface , which ->
+                Toast.makeText(applicationContext,"clicked cancel\n operation cancel",Toast.LENGTH_LONG).show()
+            }
+            //performing negative action
+            builder.setNegativeButton("Video"){dialogInterface, which ->
+                Toast.makeText(applicationContext,"Recording video",Toast.LENGTH_LONG).show()
+            }
+            // Create the AlertDialog
+            val alertDialog: AlertDialog = builder.create()
+            // Set other dialog properties
+            alertDialog.setCancelable(false)
+            alertDialog.show()
+        })
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -46,7 +69,7 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
             super.onTouchEvent(event)
         }
     }
-    
+
     override fun onDown(event: MotionEvent): Boolean {
         Log.d("DEBUG_TAG", "onDown: $event")
         return true
@@ -112,6 +135,9 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
 
     override fun onDoubleTap(event: MotionEvent): Boolean {
         Log.d("DEBUG_TAG", "onDoubleTap: $event")
+        //return true
+        var dialog=FormFragment()
+        dialog.show(supportFragmentManager,"formFragment")
         return true
     }
 
@@ -125,97 +151,6 @@ class MainActivity : AppCompatActivity(),View.OnClickListener, GestureDetector.O
         return true
     }
 
-    override fun onClick(v: View?) {
-
-        when (v?.id) {
-
-            R.id.btn_submitData -> {
-                addData()
-            }
-
-            R.id.btn_fetchHistory -> {
-                fetchData()
-            }
-
-            R.id.btn_cancel -> {
-                cancelAction()
-            }
-
-        }
-    }
 
 
-    fun addData() {
-
-        try {
-
-            dataModel.country = edt_country.text.toString()
-            dataModel.summary = edt_summary.text.toString()
-            dataModel.description = edt_description.text.toString()
-            dataModel.selectType = edt_selectType.text.toString()
-            dataModel.fixingPriority = edt_fixingPriority.text.toString()
-            dataModel.platform = edt_platform.text.toString()
-
-            realm!!.executeTransaction { realm -> realm.copyToRealm(dataModel) }
-
-            Log.d("Status","dataModel in submit "+dataModel.toString())
-
-            val jsonData = gson.toJson(dataModel)
-            Toast.makeText(applicationContext,jsonData,Toast.LENGTH_LONG).show()
-
-
-            Log.d("Status","Data Inserted !!!")
-            clearFields()
-
-        }catch (e:Exception){
-            Log.d("Status","Something went Wrong !!!")
-        }
-    }
-
-    fun clearFields(){
-
-        edt_country.setText("")
-        edt_summary.setText("")
-        edt_description.setText("")
-        edt_selectType.setText("")
-        edt_fixingPriority.setText("")
-        edt_platform.setText("")
-    }
-
-    fun cancelAction(){
-        Log.d("Status"," Canceled!!!")
-    }
-
-    fun fetchData(){
-        Log.d("Status","Inside fetchData")
-        try {
-            Log.d("Status","Inside fetchData")
-            val dataModels: List<BugDataModel> =
-                realm!!.where(BugDataModel::class.java).findAll()
-
-            var arrayList = ArrayList<Any>()
-//            arrayList.add("History")
-
-//            val bugsArray = arrayOf("bug1","bug2","bug3")
-            for (i in dataModels.size-1 downTo 0) {
-                Log.d("Status",dataModels[i]
-                    .toString())
-                arrayList.add(dataModels[i])     //gson.toJson(item)
-
-            }
-            val arrayAdapter : ArrayAdapter<*>
-            var bugsHistory = findViewById<ListView>(R.id.listview_history)
-
-            arrayAdapter = ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, arrayList)
-            bugsHistory.adapter = arrayAdapter
-
-            Log.d("Status","Data Fetched !!!")
-
-        } catch (e: Exception) {
-            Log.d("Status","Something went Wrong !!!")
-        }
-
-    }
 }
-
