@@ -65,6 +65,7 @@ class FormFragment: DialogFragment(){
                 val jsonData = gson.toJson(dataModel)
                 Toast.makeText(context,jsonData,Toast.LENGTH_LONG).show()
 
+                slackText.test(dataModel,requireActivity())
 
                 Log.d("Status","Data Inserted !!!")
                 clearFields()
@@ -103,7 +104,7 @@ class FormFragment: DialogFragment(){
                 Log.d("Status","Data Fetched !!!")
 
             } catch (e: Exception) {
-                Log.d("Status","Something went Wrong !!!")
+                Log.d("error",e.toString())
             }
 
         }
