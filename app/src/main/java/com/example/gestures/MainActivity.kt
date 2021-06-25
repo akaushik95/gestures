@@ -79,7 +79,7 @@ class MainActivity : BaseActivity(),View.OnClickListener {
             }
 
             R.id.fab -> {
-//                createDialog()
+                createDialog()
             }
 
         }
