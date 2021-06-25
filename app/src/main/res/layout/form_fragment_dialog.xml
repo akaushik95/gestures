@@ -52,7 +52,7 @@
             android:backgroundTint="@android:color/holo_blue_dark"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:text="fetch history"
+            android:text="fetch history of bugs Reported"
             android:layout_weight="1"/>
     </LinearLayout>
 

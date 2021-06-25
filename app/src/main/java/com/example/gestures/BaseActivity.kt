@@ -4,6 +4,7 @@ import android.Manifest
 import android.R.id
 import android.app.AlertDialog
 import android.content.ContentValues
+import android.R.attr
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -13,10 +14,8 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
@@ -43,9 +42,11 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     {
         
     var realm: Realm? = null
-    val dataModelGlobal = BugDataModel()
+    val dataModelGlobal = ApiDataModel()
     val gson = Gson()
     val MAX_DOCUMENTS_IN_DB = 3
+
+
     private lateinit var mDetector: GestureDetectorCompat
     private var mScreenDensity = 0
     private var mProjectionManager: MediaProjectionManager? = null
@@ -54,7 +55,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     private var mMediaProjectionCallback: MediaProjectionCallback? = null
     private var mMediaRecorder: MediaRecorder? = null
     private var serviceIntent: Intent? = null
-//    private lateinit var saveContext: Context
+    private lateinit var filePath: String
 
     companion object {
         var toggle : Boolean = false
@@ -77,7 +78,6 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
-        //Realm.init(this)
         realm = Realm.getDefaultInstance()
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
@@ -135,6 +135,10 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             // save it to gallery
             if (bitmap != null) {
                 saveBitmap(bitmap)
+                //call the form
+                var dialog=FormFragment.getNewInstance(filePath)
+                dialog.show(supportFragmentManager,"formFragment")
+
             }
         }
         //performing cancel action
@@ -145,7 +149,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
         if (toggle == false) {
             builder.setNegativeButton("Start Video") { dialogInterface, which ->
-            Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG).show() //write you recording action here
+            Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG).show()
             toggle = true
             serviceIntent!!.putExtra("inputExtra", "Screen Recording in Progress")
             ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
@@ -234,8 +238,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     override fun onDoubleTap(event: MotionEvent): Boolean {
         Log.d("DEBUG_TAG", "onDoubleTap: $event")
         //return true
-        var dialog=FormFragment()
-        dialog.show(supportFragmentManager,"formFragment")
+//        var dialog=FormFragment()
+//        dialog.show(supportFragmentManager,"formFragment")
         return true
     }
 
@@ -310,16 +314,15 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             val date = Date()
             val dateFormat = SimpleDateFormat("YYYY-MM-dd-hh-mm-ss-Ms")
             dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
-            val fileName = "/" + dateFormat.format(date) + ".mp4"
-            Log.d("DEBUG-VideoName", fileName)
+            val fileName = "/VID-" + dateFormat.format(date) + ".mp4"
+            val directory: File = applicationContext.getDir("recordings", MODE_PRIVATE)
+            val file = File(directory, fileName)
+            filePath = file.absolutePath
+            Log.d("DEBUG-VideoName", filePath)
             mMediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
             mMediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mMediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            mMediaRecorder!!.setOutputFile(
-                Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                    .toString() + fileName
-            )
+            mMediaRecorder!!.setOutputFile(filePath)
             mMediaRecorder!!.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT)
             mMediaRecorder!!.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
             mMediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
@@ -419,61 +422,35 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
         return bitmap
     }
 
-
-
     private fun saveBitmap(bitmap: Bitmap) {
         // Generating a file name
         val date = Date()
         val dateFormat = SimpleDateFormat("YYYY-MM-dd-hh-mm-ss-Ms")
         dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
-        val fileName = "/ss-" + dateFormat.format(date) + ".jpg"
-
-        // Output stream
-        var fos: OutputStream? = null
-
-        // For devices running android >= Q
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // getting the contentResolver
-            this.contentResolver?.also { resolver ->
-
-                // Content resolver will process the contentvalues
-                val contentValues = ContentValues().apply {
-
-                    // putting file information in content values
-                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
-                }
-
-                // Inserting the contentValues to
-                // contentResolver and getting the Uri
-                val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-
-                // Opening an outputstream with the Uri that we got
-                fos = imageUri?.let { resolver.openOutputStream(it) }
-            }
-        } else {
-            // These for devices running on android < Q
-            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-            val image = File(imagesDir, fileName)
-            fos = FileOutputStream(image)
+        val fileName = "SS-" + dateFormat.format(date) + ".jpg"
+        val directory: File = applicationContext.getDir("screenshots", MODE_PRIVATE)
+        val file = File(directory, fileName)
+        filePath = file.absolutePath
+        var fos: FileOutputStream? = null
+        try {
+            fos = FileOutputStream(file)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            fos.flush()
+            fos.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
-
-        fos?.use {
-            // Finally writing the bitmap to the output stream that we opened
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
-            Toast.makeText(this , "Captured View and saved to Gallery" , Toast.LENGTH_SHORT).show()
-        }
+        Log.d("DEBUG-ScreenshotName", filePath)
     }
 
     fun manageDB(){
-        val dataModels: List<BugDataModel> =
-            realm!!.where(BugDataModel::class.java).findAll()
+        val dataModels: List<ApiDataModel> =
+            realm!!.where(ApiDataModel::class.java).findAll()
 
         //delete from 0 index
 
         if (dataModels.size > MAX_DOCUMENTS_IN_DB) {
-            Log.d("DEBUG_TAG","objects greater than 2")
+            Log.d("DEBUG_TAG","objects greater than $MAX_DOCUMENTS_IN_DB")
 
 //            val dataModel: BugDataModel =
 //                realm!!.where(BugDataModel::class.java).findFirst()
@@ -503,6 +480,5 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
         }catch (e:Exception){
             Log.d("DEBUG_TAG","Something went Wrong !!!")
         }
-    }    
-
+    }
 }

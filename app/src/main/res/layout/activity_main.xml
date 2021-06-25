@@ -36,4 +36,17 @@
         android:background="@color/light_black"
         android:layout_margin="0dp" />
 
+    <Button
+        android:id="@+id/btn_fetchHistoryofApi"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="fetch history of API"/>
+
+    <ListView
+        android:id="@+id/listview_history_of_api"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
 </LinearLayout>

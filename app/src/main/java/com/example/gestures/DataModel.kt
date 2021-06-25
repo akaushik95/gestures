@@ -3,9 +3,6 @@ package com.example.gestures
 import io.realm.RealmObject
 
 open class BugDataModel : RealmObject() {
-    var apiUrl: String? = ""
-    var apiRequest: String? = ""
-    var apiResponse: String? = ""
     var country: String? = ""
     var summary: String? = ""
     var description: String? = ""
@@ -16,4 +13,5 @@ open class BugDataModel : RealmObject() {
     var customerRequestId: String? = ""
     var providerId: String? = ""
     var customerId: String? = ""
+    var filePath: String? = ""
 }

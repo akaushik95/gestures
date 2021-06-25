@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.form_fragment_dialog.view.*
 import org.json.JSONObject
 
 class MainActivity : BaseActivity(),View.OnClickListener {
@@ -22,12 +24,14 @@ class MainActivity : BaseActivity(),View.OnClickListener {
 
         btn_goToM2.setOnClickListener(this)
         fab.setOnClickListener(this)
-
+        btn_fetchHistoryofApi.setOnClickListener(this)
+        Log.d("DEBUG_TAG","in oncreate before call api")
         callAPIs()
+        Log.d("DEBUG_TAG","in oncreate after call api")
     }
 
     fun callAPIs(){
-        Log.d("DEBUG_TAG","inside callapis")
+        Log.d("DEBUG_TAG","inside call apis")
         val queue = Volley.newRequestQueue(this)
         val url = "https://api.agify.io/?name=professorInM1"
         var finalResponse : JSONObject
@@ -42,6 +46,37 @@ class MainActivity : BaseActivity(),View.OnClickListener {
             Response.ErrorListener { Log.d("DEBUG_TAG","That didn't work!") })
 
         queue.add(stringRequest)
+    }
+
+    fun fetchHistoryOfApis(){
+        try {
+            Log.d("DEBUG_TAG","Inside fetchData of API")
+            val dataModels: List<ApiDataModel> =
+                realm!!.where(ApiDataModel::class.java).findAll()
+
+            var arrayList = ArrayList<Any>()
+//            arrayList.add("History")
+
+//            val bugsArray = arrayOf("bug1","bug2","bug3")
+            for (i in dataModels.size-1 downTo 0) {
+                Log.d("Status",dataModels[i]
+                    .toString())
+                arrayList.add(dataModels[i])     //gson.toJson(item)
+
+            }
+            val arrayAdapter : ArrayAdapter<*>
+
+            val apiHistory = this.listview_history_of_api
+
+            arrayAdapter = ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, arrayList)
+            apiHistory.adapter = arrayAdapter
+
+            Log.d("DEBUG_TAG","Data Fetched for APIs !!!")
+
+        } catch (e: Exception) {
+            Log.d("DEBUG_TAG","Something went Wrong in API !!!")
+        }
     }
 
     fun createDialog(){
@@ -83,7 +118,11 @@ class MainActivity : BaseActivity(),View.OnClickListener {
                 createDialog()
             }
 
+            R.id.btn_fetchHistoryofApi -> {
+                Log.d("DEBUG_TAG","FetchData of API Clicked")
+                fetchHistoryOfApis()
+            }
         }
     }
-    }
+}
 

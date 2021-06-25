@@ -22,12 +22,15 @@ class MainActivity2 : BaseActivity(),View.OnClickListener {
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     override fun onClick(v: View?) {
         when (v?.id) {
 
             R.id.btn_goToM1 -> {
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
+                onBackPressed()
             }
 
         }
