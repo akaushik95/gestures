@@ -3,6 +3,7 @@ package com.example.gestures
 import android.Manifest
 import android.app.AlertDialog
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -46,7 +47,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     private var mMediaProjectionCallback: MediaProjectionCallback? = null
     private var mMediaRecorder: MediaRecorder? = null
     private var serviceIntent: Intent? = null
-
+//    private lateinit var saveContext: Context
 
     companion object {
         var toggle : Boolean = false
@@ -352,6 +353,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     public override fun onDestroy() {
         super.onDestroy()
         destroyMediaProjection()
+//        stopService(serviceIntent)
+        toggle = false
     }
 
 
