@@ -32,7 +32,8 @@
             android:name=".ForegroundService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="mediaProjection">
+            android:foregroundServiceType="mediaProjection"
+            android:stopWithTask="true">
         </service>
     </application>
 
