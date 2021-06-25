@@ -13,4 +13,5 @@ open class BugDataModel : RealmObject() {
     var customerRequestId: String? = ""
     var providerId: String? = ""
     var customerId: String? = ""
+    var filePath: String? = ""
 }
