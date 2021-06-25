@@ -124,6 +124,9 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             if (bitmap != null) {
                 saveBitmap(bitmap)
                 //call the form
+                var dialog=FormFragment.getNewInstance(filePath)
+                dialog.show(supportFragmentManager,"formFragment")
+
             }
         }
         //performing cancel action

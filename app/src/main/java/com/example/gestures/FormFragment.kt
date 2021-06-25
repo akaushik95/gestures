@@ -23,6 +23,21 @@ class FormFragment: DialogFragment(){
     var realm: Realm? = null
     val dataModel = BugDataModel()
     val gson = Gson()
+
+
+    companion object{
+        val FILE_PATH: String = "filePath"
+        fun getNewInstance(filePath: String): FormFragment {
+            val fragment = FormFragment()
+            val bundle = Bundle()
+            bundle.putString(FILE_PATH, filePath)
+            fragment.arguments = bundle
+            return fragment
+        }
+    }
+
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,7 +46,7 @@ class FormFragment: DialogFragment(){
         var rootView: View = inflater.inflate(R.layout.form_fragment_dialog,container,false)
         Realm.init(context)
         realm = Realm.getDefaultInstance()
-
+        rootView.text_filepath.text = this.requireArguments().getString(FILE_PATH)
         rootView.btn_submitData.setOnClickListener{
             try {
 
@@ -42,6 +57,7 @@ class FormFragment: DialogFragment(){
                 dataModel.fixingPriority = edt_fixingPriority.text.toString()
                 dataModel.platform = edt_platform.text.toString()
 
+                dataModel.filePath = this.requireArguments().getString(FILE_PATH)
                 realm!!.executeTransaction { realm -> realm.copyToRealm(dataModel) }
 
                 Log.d("Status","dataModel in submit "+dataModel.toString())
