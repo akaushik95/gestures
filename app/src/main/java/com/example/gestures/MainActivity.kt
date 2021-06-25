@@ -29,7 +29,7 @@ class MainActivity : BaseActivity(),View.OnClickListener {
     fun callAPIs(){
         Log.d("DEBUG_TAG","inside callapis")
         val queue = Volley.newRequestQueue(this)
-        val url = "https://api.agify.io/?name=bella"
+        val url = "https://api.agify.io/?name=professorInM1"
         var finalResponse : JSONObject
 
         val stringRequest = JsonObjectRequest(
@@ -37,6 +37,7 @@ class MainActivity : BaseActivity(),View.OnClickListener {
             Response.Listener { response ->
                 finalResponse = JSONObject(response.toString())
                 Log.d("DEBUG_TAG",finalResponse.toString())
+                addToDB(url,"",finalResponse.toString())
             },
             Response.ErrorListener { Log.d("DEBUG_TAG","That didn't work!") })
 

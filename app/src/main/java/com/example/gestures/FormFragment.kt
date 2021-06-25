@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.form_fragment_dialog.view.*
 
 class FormFragment: DialogFragment(){
     var realm: Realm? = null
-    val dataModel = BugDataModel()
+    val dataModelForForm = BugDataModel()
     val gson = Gson()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,24 +29,24 @@ class FormFragment: DialogFragment(){
         savedInstanceState: Bundle?
     ): View? {
         var rootView: View = inflater.inflate(R.layout.form_fragment_dialog,container,false)
-        Realm.init(context)
+        //Realm.init(context)
         realm = Realm.getDefaultInstance()
 
         rootView.btn_submitData.setOnClickListener{
             try {
 
-                dataModel.country = edt_country.text.toString()
-                dataModel.summary = edt_summary.text.toString()
-                dataModel.description = edt_description.text.toString()
-                dataModel.selectType = edt_selectType.text.toString()
-                dataModel.fixingPriority = edt_fixingPriority.text.toString()
-                dataModel.platform = edt_platform.text.toString()
+                dataModelForForm.country = edt_country.text.toString()
+                dataModelForForm.summary = edt_summary.text.toString()
+                dataModelForForm.description = edt_description.text.toString()
+                dataModelForForm.selectType = edt_selectType.text.toString()
+                dataModelForForm.fixingPriority = edt_fixingPriority.text.toString()
+                dataModelForForm.platform = edt_platform.text.toString()
 
-                realm!!.executeTransaction { realm -> realm.copyToRealm(dataModel) }
+                realm!!.executeTransaction { realm -> realm.copyToRealm(dataModelForForm) }
 
-                Log.d("Status","dataModel in submit "+dataModel.toString())
+                Log.d("Status","dataModelForForm in submit "+dataModelForForm.toString())
 
-                val jsonData = gson.toJson(dataModel)
+                val jsonData = gson.toJson(dataModelForForm)
                 Toast.makeText(context,jsonData,Toast.LENGTH_LONG).show()
 
 

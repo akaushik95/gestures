@@ -1,9 +1,9 @@
 package com.example.gestures
 
 import android.Manifest
+import android.R.id
 import android.app.AlertDialog
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -31,6 +31,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import io.realm.Realm
+import kotlinx.android.synthetic.main.data_input.*
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,7 +41,11 @@ import java.util.*
 
 open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
     {
-
+        
+    var realm: Realm? = null
+    val dataModelGlobal = BugDataModel()
+    val gson = Gson()
+    val MAX_DOCUMENTS_IN_DB = 3
     private lateinit var mDetector: GestureDetectorCompat
     private var mScreenDensity = 0
     private var mProjectionManager: MediaProjectionManager? = null
@@ -70,6 +77,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
+        //Realm.init(this)
+        realm = Realm.getDefaultInstance()
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
         serviceIntent = Intent(this, ForegroundService::class.java)
@@ -456,5 +465,44 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             Toast.makeText(this , "Captured View and saved to Gallery" , Toast.LENGTH_SHORT).show()
         }
     }
+
+    fun manageDB(){
+        val dataModels: List<BugDataModel> =
+            realm!!.where(BugDataModel::class.java).findAll()
+
+        //delete from 0 index
+
+        if (dataModels.size > MAX_DOCUMENTS_IN_DB) {
+            Log.d("DEBUG_TAG","objects greater than 2")
+
+//            val dataModel: BugDataModel =
+//                realm!!.where(BugDataModel::class.java).findFirst()
+            realm!!.executeTransaction {
+
+                dataModels[0].deleteFromRealm()
+            }
+        }
+
+    }
+        
+    fun addToDB(apiUrl: String,req: String,res: String){
+        try {
+
+            dataModelGlobal.apiUrl = apiUrl
+            dataModelGlobal.apiRequest = req
+            dataModelGlobal.apiResponse = res
+            
+            realm!!.executeTransaction { realm -> realm.copyToRealm(dataModelGlobal) }
+
+            Log.d("DEBUG_TAG","dataModelGlobal in submit "+dataModelGlobal.toString())
+            
+            Log.d("DEBUG_TAG","Api Data Inserted in DB!!!")
+
+            manageDB()
+
+        }catch (e:Exception){
+            Log.d("DEBUG_TAG","Something went Wrong !!!")
+        }
+    }    
 
 }
