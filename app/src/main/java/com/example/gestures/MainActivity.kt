@@ -27,7 +27,7 @@ class MainActivity : BaseActivity(),View.OnClickListener {
     }
 
     fun callAPIs(){
-
+        Log.d("DEBUG_TAG","inside callapis")
         val queue = Volley.newRequestQueue(this)
         val url = "https://api.agify.io/?name=bella"
         var finalResponse : JSONObject
