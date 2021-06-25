@@ -28,11 +28,10 @@ import java.io.*
 class slackText :AppCompatActivity(){
     companion object {
         fun test(dataModel: BugDataModel, activity: Activity) {
-            Log.d("test","inside slackText")
+
             val queue = Volley.newRequestQueue(activity)
-            Log.d("test","after queue")
-            //val url = "https://slack.com/api/chat.postMessage"
-            val url = "https://webhook.site/03384d56-1248-49ef-a21b-6fc2907cc152"
+
+            val url = "https://webhook.site/03384d56-1248-49ef-a21b-6fc2907cc152" // add slack api
             val country = dataModel.country
             val summary = dataModel.summary
             val desc = dataModel.description
@@ -51,10 +50,11 @@ class slackText :AppCompatActivity(){
                 country, summary, desc, select, fixing, platform
             )
             val params =  HashMap<String?, String?>()
-            params["channel"] = "CFD5QKJE9"
+            params["channel"] = "--"  // add channel here
             params["text"] = "Testing Hello World"
-            params["thread_ts"] = "1624514105.083900"
             params["username"] = "Testing Bot"
+            params["blocks"] = output
+
             var timestamp : String? =null;
             val getrequest: JsonObjectRequest = object : JsonObjectRequest(
                 Method.POST,
@@ -62,43 +62,44 @@ class slackText :AppCompatActivity(){
                 JSONObject(params as Map<*, *>),
                 Response.Listener { response -> timestamp = response.toString()},
                 Response.ErrorListener { error -> Log.d("Error Response", error.toString()) }) {
-                //              @Throws(AuthFailureError::class)
+//                              @Throws(AuthFailureError::class)
 //                override fun getHeaders(): Map<String, String> {
 //                    val headers = HashMap<String, String>()
 //                    headers["Content-Type"] = "application/json"
 //                    headers["Authorization"] =
-//                        "Bearer xoxb-3157934939-422012316773-neP8V7MnZmMvBOebHzBqge5M"
+//                        "--"
 //                    return headers
 //                }
+                // uncomment above code for slack api
             }
-            Log.d("test","before queue");
+
+
             queue.add(getrequest)
             timestamp?.let { Log.d("response", it) };
+
+
             //##################################
-            var btn: AppCompatButton? = null
-            var imageView: AppCompatImageView? = null
-            val GALLERY = 1
-            val upload_URL = "https://webhook.site/03384d56-1248-49ef-a21b-6fc2907cc152"
+
+            val upload_URL = "https://webhook.site/03384d56-1248-49ef-a21b-6fc2907cc152" // change to slack API for upload
             var jsonObject: JSONObject? = null
-//            var rQueue: RequestQueue? = null
             var filePath: String? = null
             var byteArray : ByteArray? = null
+
             val entity: MultipartEntityBuilder = MultipartEntityBuilder.create()
 
             filePath = dataModel.filePath
+
             val contentURI = Uri.fromFile(File(filePath))
-//            val contentURI = "content://com.miui.gallery.open/raw/%2Fstorage%2Femulated%2F0%2FWhatsApp%2FMedia%2FWhatsApp%20Documents%2FxS4CV9Sc_400x400.jpeg".toUri()
-            Log.d("contentURI",contentURI.toString())
+
             fun buildMultipartEntity(file: File) {
                 entity.addPart("file", FileBody(file))
                 try {
-                    entity.addPart("channel", StringBody("uiyuyhghj"))
+                    entity.addPart("channel", StringBody("Channel_CODE"))
                 } catch (e: UnsupportedEncodingException) {
                     VolleyLog.e("UnsupportedEncodingException")
                 }
             }
             fun uploadImage(bitmap: Bitmap) {
-                Log.d("inUpload","herere in upload")
                 val stream = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 byteArray = stream.toByteArray()
@@ -106,10 +107,7 @@ class slackText :AppCompatActivity(){
                     jsonObject = JSONObject()
                     val imgname = Calendar.getInstance().timeInMillis.toString()
                     jsonObject!!.put("name", imgname)
-                    //  Log.e("Image name", etxtUpload.getText().toString().trim());
-//            jsonObject!!.put("file", encodedImage)
                     jsonObject!!.put("channels", "rubbish")
-                    // jsonObject.put("aa", "aa");
                 } catch (e: JSONException) {
                     Log.e("JSONObject Here", e.toString())
                 }
@@ -118,11 +116,11 @@ class slackText :AppCompatActivity(){
                     upload_URL,
                     null,
                     Response.Listener { jsonObject ->
-                        Log.d("bbbbbb", jsonObject.toString())
+                        Log.d("Response for Upload Image", jsonObject.toString())
                         queue!!.cache.clear()
                     },
                     Response.ErrorListener {
-                            volleyError -> Log.e("aaaaaaa", volleyError.toString()) }) {
+                            volleyError -> Log.e("Error in HTTP", volleyError.toString()) }) {
                     //            @Throws(AuthFailureError::class)
 //            override fun getHeaders(): HashMap<String, String> {
 //                val headers = HashMap<String, String>()
@@ -130,9 +128,8 @@ class slackText :AppCompatActivity(){
 //                headers["Authorization"] =
 //                    "-"
 //                return headers
-//            }
-//            override fun getParams(): MutableMap<String, String> {
-//                return super.getParams()
+
+                    // uncomment to add headers for slack API
 //            }
                     override fun getBodyContentType(): String {
                         return entity.build().contentType.value
@@ -145,26 +142,16 @@ class slackText :AppCompatActivity(){
                             VolleyLog.e("IOException writing to ByteArrayOutputStream")
                         }
                         return bos.toByteArray()
-//                val bos = ByteArrayOutputStream()
-//                try {
-//                    entity.writeTo(bos)
-//                } catch (e: IOException) {
-//                    VolleyLog.e("IOException writing to ByteArrayOutputStream")
-//                }
-//                return bos.toByteArray()
-//               return byteArray!!
                     }
                 }
-                Log.d("imageQueue","before image queue")
                 queue.add(jsonObjectRequest)
             }
+
+
             try {
-                Log.d("try 189","before media")
                 val bitmap = MediaStore.Images.Media.getBitmap(activity.contentResolver, contentURI)
-                Log.d("try 191","eue")
                 var file2 = File(activity.baseContext.cacheDir, "Test")
                 file2.createNewFile()
-                Log.d("try 194","eudfdfe")
                 val bos = ByteArrayOutputStream()
                 bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
                 val bitmapdata = bos.toByteArray()
@@ -172,15 +159,10 @@ class slackText :AppCompatActivity(){
                 fos.write(bitmapdata);
                 fos.flush();
                 fos.close();
-                Log.d("try 203","eue")
                 buildMultipartEntity(file2)
-                Log.d("try 205","eue")
-//                imageView!!.setImageBitmap(bitmap)
-                Log.d("179","pass")
                 uploadImage(bitmap)
             } catch (e: IOException) {
                 e.printStackTrace()
-                //Toast.makeText(this@MainActivity, "Failed!", Toast.LENGTH_SHORT).show()
             }
         }
     }
