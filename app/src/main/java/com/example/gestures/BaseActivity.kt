@@ -2,9 +2,10 @@ package com.example.gestures
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Context
+import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -14,6 +15,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.MediaStore
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
@@ -23,16 +25,15 @@ import android.view.MotionEvent
 import android.view.Surface
 import android.view.View
 import android.widget.Toast
-import android.widget.ToggleButton
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import com.google.android.material.snackbar.Snackbar
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
     {
@@ -118,6 +119,13 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
         //performing positive action
         builder.setPositiveButton("Screenshot"){dialogInterface, which ->
             Toast.makeText(applicationContext,"Taking screenshot", Toast.LENGTH_LONG).show()
+            val rootView = window.decorView.findViewById<View>(android.R.id.content)
+            val bitmap = getScreenShot(rootView)
+            // if bitmap is not null then
+            // save it to gallery
+            if (bitmap != null) {
+                saveBitmap(bitmap)
+            }
         }
         //performing cancel action
         builder.setNeutralButton("Cancel"){dialogInterface , which ->
@@ -293,7 +301,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             val dateFormat = SimpleDateFormat("YYYY-MM-dd-hh-mm-ss-Ms")
             dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
             val fileName = "/" + dateFormat.format(date) + ".mp4"
-            Log.d("DEBUG", fileName)
+            Log.d("DEBUG-VideoName", fileName)
             mMediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
             mMediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mMediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -388,6 +396,61 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
                 }
                 return
             }
+        }
+    }
+
+    private fun getScreenShot(view: View): Bitmap? {
+        val screenView = view.rootView
+        screenView.isDrawingCacheEnabled = true
+        val bitmap = Bitmap.createBitmap(screenView.drawingCache)
+        screenView.isDrawingCacheEnabled = false
+        return bitmap
+    }
+
+
+
+    private fun saveBitmap(bitmap: Bitmap) {
+        // Generating a file name
+        val date = Date()
+        val dateFormat = SimpleDateFormat("YYYY-MM-dd-hh-mm-ss-Ms")
+        dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+        val fileName = "/ss-" + dateFormat.format(date) + ".jpg"
+
+        // Output stream
+        var fos: OutputStream? = null
+
+        // For devices running android >= Q
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // getting the contentResolver
+            this.contentResolver?.also { resolver ->
+
+                // Content resolver will process the contentvalues
+                val contentValues = ContentValues().apply {
+
+                    // putting file information in content values
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                }
+
+                // Inserting the contentValues to
+                // contentResolver and getting the Uri
+                val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+
+                // Opening an outputstream with the Uri that we got
+                fos = imageUri?.let { resolver.openOutputStream(it) }
+            }
+        } else {
+            // These for devices running on android < Q
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val image = File(imagesDir, fileName)
+            fos = FileOutputStream(image)
+        }
+
+        fos?.use {
+            // Finally writing the bitmap to the output stream that we opened
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            Toast.makeText(this , "Captured View and saved to Gallery" , Toast.LENGTH_SHORT).show()
         }
     }
 
