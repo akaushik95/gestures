@@ -92,33 +92,9 @@ class FormFragment: DialogFragment(){
 
         }
 
-        rootView.btn_attachSS.setOnClickListener{
-
-            try {
-                val intent = Intent()
-                    .setType("*/*")
-                    .setAction(Intent.ACTION_GET_CONTENT)
-
-                startActivityForResult(Intent.createChooser(intent, "Select a file"), 111)
-            }
-            catch (e: Exception) {
-                Log.d("Status","Something went Wrong !!!")
-            }
-
-        }
-
         return rootView
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        if (requestCode == 111 && resultCode == RESULT_OK) {
-            val selectedFile = data?.data //The uri with the location of the file
-            Log.d("Status","Selected file $selectedFile")
-            text_SSFilepath.setText(selectedFile.toString())
-        }
-    }
 
     fun clearFields(){
 

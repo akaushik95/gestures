@@ -53,17 +53,18 @@
         android:inputType="textAutoCorrect"
         android:hint="Platform"/>
 
-    <Button
-        android:id="@+id/btn_attachSS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Attach Screenshot"/>
-
     <TextView
         android:id="@+id/text_SSFilepath"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Screen Shot File Path"
         />
 
+    <TextView
+        android:id="@+id/text_SRFilepath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Screen Recording File Path"
+        />
 
 </LinearLayout>
