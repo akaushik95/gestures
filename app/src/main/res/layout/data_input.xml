@@ -60,11 +60,11 @@
         android:text="FilePath"
         />
 
-<!--    <TextView-->
-<!--        android:id="@+id/text_SRFilepath"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Screen Recording File Path"-->
-<!--        />-->
+    <!--    <TextView-->
+    <!--        android:id="@+id/text_SRFilepath"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Screen Recording File Path"-->
+    <!--        />-->
 
 </LinearLayout>

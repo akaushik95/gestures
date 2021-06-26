@@ -26,58 +26,8 @@ class MainActivity : BaseActivity(),View.OnClickListener {
         btn_goToM2.setOnClickListener(this)
         fab.setOnClickListener(this)
         btn_fetchHistoryofApi.setOnClickListener(this)
-        Log.d(TAG1,"in oncreate before call api")
-        callAPIs()
-        Log.d(TAG1,"in oncreate after call api")
-    }
+        callAPIs(TAG1)
 
-    fun callAPIs(){
-        Log.d(TAG1,"inside call apis")
-        val queue = Volley.newRequestQueue(this)
-        val url = "https://api.agify.io/?name=professorInM1"
-        var finalResponse : JSONObject
-
-        val stringRequest = JsonObjectRequest(
-            Request.Method.GET, url,null,
-            Response.Listener { response ->
-                finalResponse = JSONObject(response.toString())
-                Log.d(TAG1,finalResponse.toString())
-                addToDB(url,"",finalResponse.toString())
-            },
-            Response.ErrorListener { Log.d(TAG1,"That didn't work!") })
-
-        queue.add(stringRequest)
-    }
-
-    fun fetchHistoryOfApis(){
-        try {
-            Log.d(TAG1,"Inside fetchData of API")
-            val dataModels: List<ApiDataModel> =
-                realm!!.where(ApiDataModel::class.java).findAll()
-
-            var arrayList = ArrayList<Any>()
-//            arrayList.add("History")
-
-//            val bugsArray = arrayOf("bug1","bug2","bug3")
-            for (i in dataModels.size-1 downTo 0) {
-                Log.d(TAG1,dataModels[i]
-                    .toString())
-                arrayList.add(dataModels[i])     //gson.toJson(item)
-
-            }
-            val arrayAdapter : ArrayAdapter<*>
-
-            val apiHistory = this.listview_history_of_api
-
-            arrayAdapter = ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, arrayList)
-            apiHistory.adapter = arrayAdapter
-
-            Log.d(TAG1,"Data Fetched for APIs !!!")
-
-        } catch (e: Exception) {
-            Log.d(TAG1,"Something went Wrong in API !!!")
-        }
     }
 
     fun createDialog(){
@@ -121,7 +71,6 @@ class MainActivity : BaseActivity(),View.OnClickListener {
             }
 
             R.id.btn_fetchHistoryofApi -> {
-                Log.d(TAG1,"FetchData of API Clicked")
                 fetchHistoryOfApis()
             }
         }

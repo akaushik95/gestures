@@ -20,11 +20,16 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.Surface
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import com.example.gestures.ApiDataModel
 import com.example.gestures.service.ForegroundService
 import com.example.gestures.fragments.FormFragment
@@ -32,7 +37,9 @@ import com.example.gestures.R
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import io.realm.Realm
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.data_input.*
+import org.json.JSONObject
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -452,21 +459,31 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
         //delete from 0 index
 
-        if (dataModels.size > MAX_DOCUMENTS_IN_DB) {
+        if (dataModels.size == MAX_DOCUMENTS_IN_DB) {
             Log.d(TAG,"objects greater than $MAX_DOCUMENTS_IN_DB")
 
-//            val dataModel: BugDataModel =
-//                realm!!.where(BugDataModel::class.java).findFirst()
+//            for (i in (0..dataModels.size-2) ){
+//                dataModels[i].
+//            }
             realm!!.executeTransaction {
 
                 dataModels[0].deleteFromRealm()
             }
+
+//            var val3 = dataModels[3].apiUrl
+//            Log.d(TAG,"value at 3 $val3")
+            var val0 = dataModels[0].apiUrl
+            Log.d(TAG,"value at 0 $val0")
         }
 
     }
 
     fun addToDB(apiUrl: String,req: String,res: String){
+
+
         try {
+
+            manageDB()
 
             dataModelGlobal.apiUrl = apiUrl
             dataModelGlobal.apiRequest = req
@@ -474,14 +491,62 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
             realm!!.executeTransaction { realm -> realm.copyToRealm(dataModelGlobal) }
 
-            Log.d(TAG,"dataModelGlobal in submit "+dataModelGlobal.toString())
+            //Log.d(TAG,"dataModelGlobal in submit "+dataModelGlobal.toString())
 
-            Log.d(TAG,"Api Data Inserted in DB!!!")
+            Log.d(TAG,"Api Data Inserted in DB!!! $apiUrl")
 
-            manageDB()
+
 
         }catch (e:Exception){
             Log.d(TAG,"Something went Wrong !!!")
         }
+    }
+
+    fun fetchHistoryOfApis(){
+        try {
+
+            val dataModels: List<ApiDataModel> =
+                realm!!.where(ApiDataModel::class.java).findAll()
+
+            var arrayList = ArrayList<Any>()
+
+            for (i in dataModels.size-1 downTo 0) {
+                Log.d(TAG,"index is $i")
+                Log.d(TAG,dataModels[i]
+                    .toString())
+                arrayList.add(dataModels[i])     //gson.toJson(item)
+
+            }
+            val arrayAdapter : ArrayAdapter<*>
+
+            val apiHistory = this.listview_history_of_api
+
+            arrayAdapter = ArrayAdapter(this,
+                android.R.layout.simple_list_item_1, arrayList)
+            apiHistory.adapter = arrayAdapter
+
+            Log.d(TAG,"Data Fetched for APIs !!!")
+
+        } catch (e: Exception) {
+            Log.d(TAG,getString(R.string.error_occured))
+        }
+    }
+
+    fun callAPIs(name: String){
+        Log.d(TAG,"api call $name")
+        val queue = Volley.newRequestQueue(this)
+        val url = "https://api.agify.io/?name=$name"
+        var finalResponse : JSONObject
+
+        val stringRequest = JsonObjectRequest(
+            Request.Method.GET, url,null,
+            Response.Listener { response ->
+                finalResponse = JSONObject(response.toString())
+
+                addToDB(url,"",finalResponse.toString())
+            },
+            Response.ErrorListener { Log.d(name,"That didn't work!") })
+
+        queue.add(stringRequest)
     }
 }

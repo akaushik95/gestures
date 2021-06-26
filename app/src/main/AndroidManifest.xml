@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.gestures">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
@@ -18,7 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gestures"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.MainActivity2"></activity>
+        <activity android:name=".activities.MainActivity4"></activity>
+        <activity android:name=".activities.MainActivity3" />
+        <activity android:name=".activities.MainActivity2" />
         <activity android:name=".activities.BaseActivity" />
         <activity android:name=".activities.MainActivity">
             <intent-filter>
@@ -33,8 +35,7 @@
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaProjection"
-            android:stopWithTask="true">
-        </service>
+            android:stopWithTask="true" />
     </application>
 
 </manifest>

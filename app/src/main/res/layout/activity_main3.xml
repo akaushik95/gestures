@@ -7,18 +7,18 @@
     android:padding="40dp">
 
     <TextView
-        android:id="@+id/text1"
-        android:text="Screen 2"
+        android:id="@+id/text2"
+        android:text="Screen 3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/btn_goToM3"
+        android:id="@+id/btn_goToM4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="Go To M3"
+        android:text="Go To M4"
         android:background="@color/light_black"
         android:layout_margin="0dp" />
 

@@ -41,7 +41,7 @@
         android:backgroundTint="@android:color/holo_blue_dark"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="fetch history of API"/>
+        android:text="fetch history of API calls"/>
 
     <ListView
         android:id="@+id/listview_history_of_api"
