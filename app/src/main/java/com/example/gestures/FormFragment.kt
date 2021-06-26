@@ -1,8 +1,6 @@
 package com.example.gestures
 
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,10 +11,10 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.google.gson.Gson
 import io.realm.Realm
-import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.data_input.*
 import kotlinx.android.synthetic.main.data_input.view.*
 import kotlinx.android.synthetic.main.form_fragment_dialog.view.*
+import java.io.File
 
 
 class FormFragment: DialogFragment(){
@@ -49,14 +47,14 @@ class FormFragment: DialogFragment(){
         rootView.btn_submitData.setOnClickListener{
             try {
 
-                dataModelForForm.country = edt_country.text.toString()
-                dataModelForForm.summary = edt_summary.text.toString()
-                dataModelForForm.description = edt_description.text.toString()
-                dataModelForForm.selectType = edt_selectType.text.toString()
-                dataModelForForm.fixingPriority = edt_fixingPriority.text.toString()
-                dataModelForForm.platform = edt_platform.text.toString()
+                val country: String = edt_country.text.toString()
+                val summary: String = edt_summary.text.toString()
+                val description: String = edt_description.text.toString()
+                val selectType: String = edt_selectType.text.toString()
+                val fixingPriority: String = edt_fixingPriority.text.toString()
+                val platform: String = edt_platform.text.toString()
 
-                dataModelForForm.filePath = this.requireArguments().getString(FILE_PATH)
+                val filePath: String = this.requireArguments().getString(FILE_PATH).toString()
                 realm!!.executeTransaction { realm -> realm.copyToRealm(dataModelForForm) }
 
 
@@ -64,9 +62,15 @@ class FormFragment: DialogFragment(){
 
                 val jsonData = gson.toJson(dataModelForForm)
                 Toast.makeText(context,jsonData,Toast.LENGTH_LONG).show()
+                //////////////////// SLACK API TEST ///////////////////
+
+                val formdata = arrayOf(country,summary,description,
+                                        selectType,fixingPriority,platform)
+
+                sendfile.uploadtext(formdata,File(filePath))
 
 
-                Log.d("Status","Data Inserted !!!")
+                ///////////////////////////////////////////////////////
                 clearFields()
 
             }catch (e:Exception){
@@ -76,37 +80,6 @@ class FormFragment: DialogFragment(){
         rootView.btn_cancel.setOnClickListener{
             dismiss()
         }
-//        rootView.btn_fetchHistory.setOnClickListener{
-//            try {
-//                Log.d("Status","Inside fetchData")
-//                val dataModels: List<BugDataModel> =
-//                    realm!!.where(BugDataModel::class.java).findAll()
-//
-//                var arrayList = ArrayList<Any>()
-////            arrayList.add("History")
-//
-////            val bugsArray = arrayOf("bug1","bug2","bug3")
-//                for (i in dataModels.size-1 downTo 0) {
-//                    Log.d("Status",dataModels[i]
-//                        .toString())
-//                    arrayList.add(dataModels[i])     //gson.toJson(item)
-//
-//                }
-//                val arrayAdapter : ArrayAdapter<*>
-//
-//                val bugsHistory = rootView.listview_history
-//
-//                arrayAdapter = ArrayAdapter(rootView.context,
-//                    android.R.layout.simple_list_item_1, arrayList)
-//                bugsHistory.adapter = arrayAdapter
-//
-//                Log.d("Status","Data Fetched !!!")
-//
-//            } catch (e: Exception) {
-//                Log.d("Status","Something went Wrong !!!")
-//            }
-//
-//        }
 
         return rootView
     }
@@ -124,62 +97,3 @@ class FormFragment: DialogFragment(){
 
 
 }
-
-
-
-//package com.example.gestures
-//
-//import android.os.Bundle
-//import android.util.Log
-//import android.view.LayoutInflater
-//import android.view.View
-//import android.view.ViewGroup
-//import android.widget.Toast
-//import androidx.fragment.app.DialogFragment
-//import io.realm.Realm
-//import kotlinx.android.synthetic.main.data_input.*
-//import kotlinx.android.synthetic.main.form_fragment_dialog.view.*
-//
-//class FormFragment: DialogFragment(){
-//    var realm: Realm? = null
-//    val dataModel = BugDataModel()
-//    override fun onCreateView(
-//        inflater: LayoutInflater,
-//        container: ViewGroup?,
-//        savedInstanceState: Bundle?
-//    ): View? {
-//        var rootView: View = inflater.inflate(R.layout.form_fragment_dialog,container,false)
-//        Realm.init(context)
-//        realm = Realm.getDefaultInstance()
-//        rootView.btn_submitData.setOnClickListener{
-//            try {
-//
-//                dataModel.country = edt_country.text.toString()
-//                dataModel.summary = edt_summary.text.toString()
-//                dataModel.description = edt_description.text.toString()
-//
-//                realm!!.executeTransaction { realm -> realm.copyToRealm(dataModel) }
-//
-//                clearFields()
-//                dismiss()
-//                Toast.makeText(context,"SENDING...", Toast.LENGTH_LONG).show()
-//                Log.d("Status","Data Inserted !!!")
-//
-//            }catch (e:Exception){
-//                Log.d("Status","Something went Wrong !!!")
-//            }
-//        }
-//        rootView.btn_cancel.setOnClickListener{
-//            dismiss()
-//        }
-//
-//        return rootView
-//    }
-//
-//    fun clearFields(){
-//
-//        edt_country.setText("")
-//        edt_summary.setText("")
-//        edt_description.setText("")
-//    }
-//}

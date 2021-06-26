@@ -125,4 +125,3 @@ class MainActivity : BaseActivity(),View.OnClickListener {
         }
     }
 }
-

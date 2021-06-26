@@ -13,6 +13,7 @@ import kotlinx.android.synthetic.main.activity_main2.*
 import org.json.JSONObject
 
 class MainActivity2 : BaseActivity(),View.OnClickListener {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
@@ -30,7 +31,9 @@ class MainActivity2 : BaseActivity(),View.OnClickListener {
         when (v?.id) {
 
             R.id.btn_goToM1 -> {
-                onBackPressed()
+                //onBackPressed()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
             }
 
         }
