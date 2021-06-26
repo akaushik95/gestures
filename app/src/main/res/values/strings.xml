@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">gestures</string>
     <string name="label_permissions">Please enable Microphone and Storage permissions.</string>
+    <string name="error_occured">Something went wrong !!</string>
 </resources>

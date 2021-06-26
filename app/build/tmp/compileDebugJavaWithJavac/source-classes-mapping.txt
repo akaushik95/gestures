@@ -8,11 +8,5 @@ io/realm/com_example_gestures_ApiDataModelRealmProxy.java
  io.realm.com_example_gestures_ApiDataModelRealmProxy$ClassNameHelper
 io/realm/DefaultRealmModule.java
  io.realm.DefaultRealmModule
-io/realm/com_example_gestures_BugDataModelRealmProxy.java
- io.realm.com_example_gestures_BugDataModelRealmProxy
- io.realm.com_example_gestures_BugDataModelRealmProxy$BugDataModelColumnInfo
- io.realm.com_example_gestures_BugDataModelRealmProxy$ClassNameHelper
 io/realm/com_example_gestures_ApiDataModelRealmProxyInterface.java
  io.realm.com_example_gestures_ApiDataModelRealmProxyInterface
-io/realm/com_example_gestures_BugDataModelRealmProxyInterface.java
- io.realm.com_example_gestures_BugDataModelRealmProxyInterface

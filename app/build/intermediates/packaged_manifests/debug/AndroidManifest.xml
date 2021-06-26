@@ -28,9 +28,9 @@
         android:testOnly="true"
         android:theme="@style/Theme.Gestures"
         android:usesCleartextTraffic="true" >
-        <activity android:name="com.example.gestures.MainActivity2" />
-        <activity android:name="com.example.gestures.BaseActivity" />
-        <activity android:name="com.example.gestures.MainActivity" >
+        <activity android:name="com.example.gestures.activities.MainActivity2" />
+        <activity android:name="com.example.gestures.activities.BaseActivity" />
+        <activity android:name="com.example.gestures.activities.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,7 +39,7 @@
         </activity>
 
         <service
-            android:name="com.example.gestures.ForegroundService"
+            android:name="com.example.gestures.service.ForegroundService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="mediaProjection"
