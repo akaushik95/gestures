@@ -17,32 +17,25 @@ class SendFile {
             val client = OkHttpClient()
             val uploadBugUrl = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
 
-            val output = String.format(
-                "[{\"type\":\"header\",\"text\":" +
-                        "{\"type\":\"plain_text\",\"text\":\"Bug Reporter :firecracker: \",\"emoji\":true}}" +
-                        ",{\"type\":\"section\",\"fields\":[{\"type\":\"mrkdwn\"," +
-                        "\"text\":\"*Country*\n %s \"}]}," +
-                        "{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\"," +
-                        "\"text\":\"*Summary*\n %s \"}}," +
-                        "{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\"," +
-                        "\"text\":\"*Description*\n %s \"}}," +
-                        "{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\"," +
-                        "\"text\":\"*Select Type*\n %s \"}}," +
-                        "{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\"," +
-                        "\"text\":\"*Fixing Priority*\n %s  \"}}," +
-                        "{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\"," +
-                        "\"text\":\"*Platform*\n %s \"}}]",
-                apiFormData.country,
-                apiFormData.summary,
-                apiFormData.description,
-                apiFormData.type,
-                apiFormData.fixingPriority,
-                apiFormData.platform
-            )
+            val textMessage =
+                String.format(
+                    ":firecracker: *Bug Reporter:* @admin\\n*`Country`*%s" +
+                            "*`Summary`* %s" +
+                            "*`Description`* %s\\n*`Select Type`*Customer" +
+                            " *`Fixing Priority`*P0-Funnel_Breaking" +
+                            " *`Platform`*Android" +
+                            " *`App Version`*7.3.21" +
+                            " *`Customer Request ID`*-" +
+                            " *`Provider Id`* -" +
+                            " *`Customer Id`* 601234526271888",
+                    apiFormData.country,
+                    apiFormData.summary,
+                    apiFormData.description
+                )
 
             val jsonObject = JSONObject()
             jsonObject.put("channel", "xyz")
-            jsonObject.put("blocks", output)
+            jsonObject.put("text", textMessage)
             val jsonBody = RequestBody.create(
                 MediaType.parse("application/json"),
                 jsonObject.toString()
@@ -68,7 +61,7 @@ class SendFile {
             })
         }
 
-        fun uploadAttachment(file: File?, ts: String?) {
+        fun uploadAttachment(file: File, ts: String) {
             val uploadAttachmentUrl = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
             val MEDIA_TYPE_PNG = MediaType.parse("application/octet-stream")
             val req: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
