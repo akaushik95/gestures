@@ -14,14 +14,14 @@ import java.net.UnknownHostException
 class sendfile : AppCompatActivity(){
 
     companion object {
-
+        val token = "bearer xoxbstuff"
         fun uploadtext(values: Array<String?>, file: File){
             val client = OkHttpClient()
-
+            val ok = ""
             // Things to be changed
 
             val url = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
-            val token = "bearer xoxbstuff"
+
 
             val output = String.format("[{\"type\":\"header\",\"text\":" +
                     "{\"type\":\"plain_text\",\"text\":\"Bug Reporter :firecracker: \",\"emoji\":true}}" +
@@ -67,28 +67,32 @@ class sendfile : AppCompatActivity(){
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     val ok = response.body()?.string()
-                    upload(file)
+                    Log.d("response",ok.toString())
+                    // need to send thread_ts in case of slack_api
+                    upload(file,"TimeStamp")
                 }
             })
         }
 
-        fun upload(file: File?) {
+        fun upload(file: File? , ts : String?) {
             try {
 
                 val url2 = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
-                val MEDIA_TYPE_PNG = MediaType.parse("image/png")
+                val MEDIA_TYPE_PNG = MediaType.parse("application/octet-stream")
                 Log.d("2","1")
                 val req: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
-                    .addFormDataPart("userid", "8457851245")
                     .addFormDataPart(
-                        "File",
-                        "UC",
+                        "file",
+                        "UC BUG",
                         RequestBody.create(MEDIA_TYPE_PNG, file)
-                    ).build()
+                    )
+                    .addFormDataPart("channel" ,"XXXX")
+                    .addFormDataPart("ts",ts).build()
 
                 val request = Request.Builder()
                     .url(url2)
                     .post(req)
+                    .header("Authorization", token)
                     .build()
 
                 val client = OkHttpClient()

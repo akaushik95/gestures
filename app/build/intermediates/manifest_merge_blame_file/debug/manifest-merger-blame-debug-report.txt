@@ -6,85 +6,85 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="28"
-8-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml
+8-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml
 9        android:targetSdkVersion="30" />
-9-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml
+9-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:5:5-66
-11-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:5:22-64
+11-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:5:5-66
+11-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:5:22-64
 12    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-12-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:6:5-80
-12-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:6:22-77
+12-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:6:5-80
+12-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:6:22-77
 13    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-13-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:7:5-80
-13-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:7:22-78
+13-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:7:5-80
+13-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:7:22-78
 14    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-14-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:8:5-70
-14-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:8:22-68
+14-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:8:5-70
+14-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:8:22-68
 15    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION" />
-15-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:9:5-99
-15-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:9:22-96
+15-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:9:5-99
+15-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:9:22-96
 16    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-16-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:10:5-77
-16-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:10:22-74
+16-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:10:5-77
+16-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:10:22-74
 17
 18    <application
-18-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:12:5-38:19
+18-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:12:5-38:19
 19        android:name="com.example.gestures.MyApplication"
-19-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:13:9-38
+19-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:13:9-38
 20        android:allowBackup="true"
-20-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:14:9-35
+20-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:14:9-35
 21        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-21-->[androidx.core:core:1.5.0] /Users/hardeepsinghsagu/.gradle/caches/transforms-2/files-2.1/7cb2fae01bc4f944cc51e476186d96e6/core-1.5.0/AndroidManifest.xml:24:18-86
+21-->[androidx.core:core:1.5.0] /Users/hardevgoyal/.gradle/caches/transforms-2/files-2.1/7cb2fae01bc4f944cc51e476186d96e6/core-1.5.0/AndroidManifest.xml:24:18-86
 22        android:debuggable="true"
 23        android:extractNativeLibs="false"
 24        android:icon="@mipmap/ic_launcher"
-24-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:15:9-43
+24-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:15:9-43
 25        android:label="@string/app_name"
-25-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:16:9-41
+25-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:16:9-41
 26        android:roundIcon="@mipmap/ic_launcher_round"
-26-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:17:9-54
+26-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:17:9-54
 27        android:supportsRtl="true"
-27-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:18:9-35
+27-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:18:9-35
 28        android:testOnly="true"
 29        android:theme="@style/Theme.Gestures"
-29-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:19:9-46
+29-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:19:9-46
 30        android:usesCleartextTraffic="true" >
-30-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:20:9-44
+30-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:20:9-44
 31        <activity android:name="com.example.gestures.MainActivity2" />
-31-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:21:9-60
-31-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:21:19-48
+31-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:21:9-60
+31-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:21:19-48
 32        <activity android:name="com.example.gestures.BaseActivity" />
-32-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:22:9-50
-32-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:22:19-47
+32-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:22:9-50
+32-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:22:19-47
 33        <activity android:name="com.example.gestures.MainActivity" >
-33-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:23:9-29:20
-33-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:23:19-47
+33-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:23:9-29:20
+33-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:23:19-47
 34            <intent-filter>
-34-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:24:13-28:29
+34-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:24:13-28:29
 35                <action android:name="android.intent.action.MAIN" />
-35-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:25:17-69
-35-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:25:25-66
+35-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:25:17-69
+35-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:25:25-66
 36
 37                <category android:name="android.intent.category.LAUNCHER" />
-37-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:27:17-77
-37-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:27:27-74
+37-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:27:17-77
+37-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:27:27-74
 38            </intent-filter>
 39        </activity>
 40
 41        <service
-41-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:31:9-37:19
+41-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:31:9-37:19
 42            android:name="com.example.gestures.ForegroundService"
-42-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:32:13-46
+42-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:32:13-46
 43            android:enabled="true"
-43-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:33:13-35
+43-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:33:13-35
 44            android:exported="true"
-44-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:34:13-36
+44-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:34:13-36
 45            android:foregroundServiceType="mediaProjection"
-45-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:35:13-60
+45-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:35:13-60
 46            android:stopWithTask="true" >
-46-->/Users/hardeepsinghsagu/Desktop/gestures/app/src/main/AndroidManifest.xml:36:13-40
+46-->/Users/hardevgoyal/Desktop/okhttp/gestures/app/src/main/AndroidManifest.xml:36:13-40
 47        </service>
 48    </application>
 49
