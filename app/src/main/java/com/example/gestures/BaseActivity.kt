@@ -283,6 +283,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             stopService(serviceIntent)
             mMediaRecorder!!.stop()
             mMediaRecorder!!.reset()
+            var dialog=FormFragment.getNewInstance(filePath)
+            dialog.show(supportFragmentManager,"formFragment")
             Log.v(TAG, "Stopping Recording")
             stopScreenSharing()
         }
