@@ -76,37 +76,37 @@ class FormFragment: DialogFragment(){
         rootView.btn_cancel.setOnClickListener{
             dismiss()
         }
-        rootView.btn_fetchHistory.setOnClickListener{
-            try {
-                Log.d("Status","Inside fetchData")
-                val dataModels: List<BugDataModel> =
-                    realm!!.where(BugDataModel::class.java).findAll()
-
-                var arrayList = ArrayList<Any>()
-//            arrayList.add("History")
-
-//            val bugsArray = arrayOf("bug1","bug2","bug3")
-                for (i in dataModels.size-1 downTo 0) {
-                    Log.d("Status",dataModels[i]
-                        .toString())
-                    arrayList.add(dataModels[i])     //gson.toJson(item)
-
-                }
-                val arrayAdapter : ArrayAdapter<*>
-
-                val bugsHistory = rootView.listview_history
-
-                arrayAdapter = ArrayAdapter(rootView.context,
-                    android.R.layout.simple_list_item_1, arrayList)
-                bugsHistory.adapter = arrayAdapter
-
-                Log.d("Status","Data Fetched !!!")
-
-            } catch (e: Exception) {
-                Log.d("Status","Something went Wrong !!!")
-            }
-
-        }
+//        rootView.btn_fetchHistory.setOnClickListener{
+//            try {
+//                Log.d("Status","Inside fetchData")
+//                val dataModels: List<BugDataModel> =
+//                    realm!!.where(BugDataModel::class.java).findAll()
+//
+//                var arrayList = ArrayList<Any>()
+////            arrayList.add("History")
+//
+////            val bugsArray = arrayOf("bug1","bug2","bug3")
+//                for (i in dataModels.size-1 downTo 0) {
+//                    Log.d("Status",dataModels[i]
+//                        .toString())
+//                    arrayList.add(dataModels[i])     //gson.toJson(item)
+//
+//                }
+//                val arrayAdapter : ArrayAdapter<*>
+//
+//                val bugsHistory = rootView.listview_history
+//
+//                arrayAdapter = ArrayAdapter(rootView.context,
+//                    android.R.layout.simple_list_item_1, arrayList)
+//                bugsHistory.adapter = arrayAdapter
+//
+//                Log.d("Status","Data Fetched !!!")
+//
+//            } catch (e: Exception) {
+//                Log.d("Status","Something went Wrong !!!")
+//            }
+//
+//        }
 
         return rootView
     }
