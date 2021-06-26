@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textCapCharacters"
-        android:hint="Country"/>
+        android:hint="@string/country"/>
 
     <EditText
         android:id="@+id/edt_summary"
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:inputType="textAutoCorrect"
-        android:hint="Summary"/>
+        android:hint="@string/summary"/>
 
     <EditText
         android:id="@+id/edt_description"
@@ -27,44 +27,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:inputType="textMultiLine"
-        android:hint="Description"/>
-
-    <EditText
-        android:id="@+id/edt_selectType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:inputType="textAutoCorrect"
-        android:hint="Select Type"/>
-
-    <EditText
-        android:id="@+id/edt_fixingPriority"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:inputType="text"
-        android:hint="Fixing Priority"/>
-
-    <EditText
-        android:id="@+id/edt_platform"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:inputType="textAutoCorrect"
-        android:hint="Platform"/>
+        android:hint="@string/description"/>
 
     <TextView
         android:id="@+id/text_filepath"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="FilePath"
+        android:text="@string/filepath"
         />
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/text_SRFilepath"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Screen Recording File Path"-->
-    <!--        />-->
 
 </LinearLayout>

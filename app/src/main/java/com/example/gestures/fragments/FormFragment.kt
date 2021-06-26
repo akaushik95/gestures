@@ -44,13 +44,10 @@ class FormFragment : DialogFragment() {
                 val country: String = edt_country.text.toString()
                 val summary: String = edt_summary.text.toString()
                 val description: String = edt_description.text.toString()
-                val selectType: String = edt_selectType.text.toString()
-                val fixingPriority: String = edt_fixingPriority.text.toString()
-                val platform: String = edt_platform.text.toString()
 
                 val filePath: String = this.requireArguments().getString(FILE_PATH).toString()
 
-                val apiFormData = ApiFormData(country, summary, description, selectType, fixingPriority, platform, File(filePath))
+                val apiFormData = ApiFormData(country, summary, description, File(filePath))
                 SendFile.uploadText(apiFormData)
 
                 dismiss()
