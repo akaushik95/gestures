@@ -8,7 +8,7 @@
 
     <TextView
         android:id="@+id/text1"
-        android:text="Screen 2"
+        android:text="@string/screen_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
@@ -16,9 +16,7 @@
         android:id="@+id/btn_goToM3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:text="Go To M3"
+        android:text="@string/go_to_m3"
         android:background="@color/light_black"
         android:layout_margin="0dp" />
 

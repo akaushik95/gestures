@@ -21,6 +21,7 @@ import android.view.MotionEvent
 import android.view.Surface
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -45,15 +46,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
-{
+abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener,
+    GestureDetector.OnDoubleTapListener {
 
     var realm: Realm? = null
     val dataModelGlobal = ApiDataModel()
-    val gson = Gson()
     val MAX_DOCUMENTS_IN_DB = 3
     val TAG: String = "BaseActivity"
-
 
     private lateinit var mDetector: GestureDetectorCompat
     private var mScreenDensity = 0
@@ -66,7 +65,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
     private lateinit var filePath: String
 
     companion object {
-        var toggle : Boolean = false
+        var toggle: Boolean = false
         private const val TAG = "MainActivity"
         private const val REQUEST_CODE = 1000
         private const val DISPLAY_WIDTH = 720
@@ -81,7 +80,6 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             ORIENTATIONS.append(Surface.ROTATION_270, 180)
         }
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,8 +133,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
 
         //performing positive action
-        builder.setPositiveButton("Screenshot"){dialogInterface, which ->
-            Toast.makeText(applicationContext,"Taking screenshot", Toast.LENGTH_LONG).show()
+        builder.setPositiveButton("Screenshot") { dialogInterface, which ->
+            Toast.makeText(applicationContext, "Taking screenshot", Toast.LENGTH_LONG).show()
             val rootView = window.decorView.findViewById<View>(android.R.id.content)
             val bitmap = getScreenShot(rootView)
             // if bitmap is not null then
@@ -144,20 +142,25 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             if (bitmap != null) {
                 saveBitmap(bitmap)
                 //call the form
-                var dialog= FormFragment.getNewInstance(filePath)
-                dialog.show(supportFragmentManager,"formFragment")
+                var dialog = FormFragment.getNewInstance(filePath)
+                dialog.show(supportFragmentManager, "formFragment")
 
             }
         }
         //performing cancel action
-        builder.setNeutralButton("Cancel"){dialogInterface , which ->
-            Toast.makeText(applicationContext,"clicked cancel\n operation cancel",Toast.LENGTH_LONG).show()
+        builder.setNeutralButton("Cancel") { dialogInterface, which ->
+            Toast.makeText(
+                applicationContext,
+                "clicked cancel\n operation cancel",
+                Toast.LENGTH_LONG
+            ).show()
         }
         //performing negative action
 
         if (toggle == false) {
             builder.setNegativeButton("Start Video") { dialogInterface, which ->
-                Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG)
+                    .show()
                 toggle = true
                 serviceIntent!!.putExtra("inputExtra", "Screen Recording in Progress")
                 ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
@@ -208,11 +211,12 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
                     }
                 } else {
                     onToggleScreenShare()
-                } }
-        }
-        else {
+                }
+            }
+        } else {
             builder.setNegativeButton("Stop Video") { dialogInterface, which ->
-                Toast.makeText(applicationContext, "Video recording stopped", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Video recording stopped", Toast.LENGTH_LONG)
+                    .show()
                 toggle = false
                 onToggleScreenShare()
             }
@@ -245,9 +249,6 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
     override fun onDoubleTap(event: MotionEvent): Boolean {
         Log.d(TAG, "onDoubleTap: $event")
-        //return true
-//        var dialog=FormFragment()
-//        dialog.show(supportFragmentManager,"formFragment")
         return true
     }
 
@@ -291,8 +292,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             stopService(serviceIntent)
             mMediaRecorder!!.stop()
             mMediaRecorder!!.reset()
-            var dialog= FormFragment.getNewInstance(filePath)
-            dialog.show(supportFragmentManager,"formFragment")
+            var dialog = FormFragment.getNewInstance(filePath)
+            dialog.show(supportFragmentManager, "formFragment")
             Log.v(TAG, "Stopping Recording")
             stopScreenSharing()
         }
@@ -328,7 +329,7 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             val directory: File = applicationContext.getDir("recordings", MODE_PRIVATE)
             val file = File(directory, fileName)
             filePath = file.absolutePath
-            Log.d(TAG+" DEBUG-VideoName", filePath)
+            Log.d(TAG + " DEBUG-VideoName", filePath)
             mMediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
             mMediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mMediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
@@ -450,17 +451,17 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        Log.d(TAG+" DEBUG-ScreenshotName", filePath)
+        Log.d(TAG + " DEBUG-ScreenshotName", filePath)
     }
 
-    fun manageDB(){
+    fun manageDB() {
         val dataModels: List<ApiDataModel> =
             realm!!.where(ApiDataModel::class.java).findAll()
 
         //delete from 0 index
 
         if (dataModels.size == MAX_DOCUMENTS_IN_DB) {
-            Log.d(TAG,"objects greater than $MAX_DOCUMENTS_IN_DB")
+            Log.d(TAG, "objects greater than $MAX_DOCUMENTS_IN_DB")
 
 //            for (i in (0..dataModels.size-2) ){
 //                dataModels[i].
@@ -473,18 +474,14 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 //            var val3 = dataModels[3].apiUrl
 //            Log.d(TAG,"value at 3 $val3")
             var val0 = dataModels[0].apiUrl
-            Log.d(TAG,"value at 0 $val0")
+            Log.d(TAG, "value at 0 $val0")
         }
 
     }
 
-    fun addToDB(apiUrl: String,req: String,res: String){
-
-
+    fun addToDB(apiUrl: String, req: String, res: String) {
         try {
-
             manageDB()
-
             dataModelGlobal.apiUrl = apiUrl
             dataModelGlobal.apiRequest = req
             dataModelGlobal.apiResponse = res
@@ -493,60 +490,59 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
             //Log.d(TAG,"dataModelGlobal in submit "+dataModelGlobal.toString())
 
-            Log.d(TAG,"Api Data Inserted in DB!!! $apiUrl")
+            Log.d(TAG, "Api Data Inserted in DB!!! $apiUrl")
 
-
-
-        }catch (e:Exception){
-            Log.d(TAG,"Something went Wrong !!!")
-        }
-    }
-
-    fun fetchHistoryOfApis(){
-        try {
-
-            val dataModels: List<ApiDataModel> =
-                realm!!.where(ApiDataModel::class.java).findAll()
-
-            var arrayList = ArrayList<Any>()
-
-            for (i in dataModels.size-1 downTo 0) {
-                Log.d(TAG,"index is $i")
-                Log.d(TAG,dataModels[i]
-                    .toString())
-                arrayList.add(dataModels[i])     //gson.toJson(item)
-
-            }
-            val arrayAdapter : ArrayAdapter<*>
-
-            val apiHistory = this.listview_history_of_api
-
-            arrayAdapter = ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, arrayList)
-            apiHistory.adapter = arrayAdapter
-
-            Log.d(TAG,"Data Fetched for APIs !!!")
 
         } catch (e: Exception) {
-            Log.d(TAG,getString(R.string.error_occured))
+            Log.d(TAG, "Something went Wrong !!!")
         }
     }
 
-    fun callAPIs(name: String){
-        Log.d(TAG,"api call $name")
+    fun fetchHistoryOfApis() {
+        try {
+            val apiHistoryListView = getApiHistoryListView()
+            apiHistoryListView.let {
+                val dataModels: List<ApiDataModel> =
+                    realm!!.where(ApiDataModel::class.java).findAll()
+                var arrayList = ArrayList<Any>()
+                for (i in dataModels.size - 1 downTo 0) {
+                    Log.d(TAG, "index is $i")
+                    Log.d(
+                        TAG, dataModels[i]
+                            .toString()
+                    )
+                    arrayList.add(dataModels[i])     //gson.toJson(item)
+                }
+                val arrayAdapter: ArrayAdapter<*>
+                arrayAdapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_list_item_1, arrayList
+                )
+                apiHistoryListView?.adapter = arrayAdapter
+                Log.d(TAG, "Data Fetched for APIs !!!")
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, getString(R.string.error_occured))
+        }
+    }
+
+    fun makeDummyApiCall(name: String) {
+        Log.d(TAG, "api call $name")
         val queue = Volley.newRequestQueue(this)
         val url = "https://api.agify.io/?name=$name"
-        var finalResponse : JSONObject
+        var finalResponse: JSONObject
 
         val stringRequest = JsonObjectRequest(
-            Request.Method.GET, url,null,
+            Request.Method.GET, url, null,
             Response.Listener { response ->
                 finalResponse = JSONObject(response.toString())
 
-                addToDB(url,"",finalResponse.toString())
+                addToDB(url, "", finalResponse.toString())
             },
-            Response.ErrorListener { Log.d(name,"That didn't work!") })
+            Response.ErrorListener { Log.d(name, "That didn't work!") })
 
         queue.add(stringRequest)
     }
+
+    abstract fun getApiHistoryListView() : ListView?
 }
