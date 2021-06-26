@@ -34,7 +34,7 @@ import java.util.*
 
 
 open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener
-    {
+{
 
     private lateinit var mDetector: GestureDetectorCompat
     private var mScreenDensity = 0
@@ -137,36 +137,46 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
 
         if (toggle == false) {
             builder.setNegativeButton("Start Video") { dialogInterface, which ->
-            Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG).show()
-            toggle = true
-            serviceIntent!!.putExtra("inputExtra", "Screen Recording in Progress")
-            ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
-            if (ContextCompat.checkSelfPermission(
-                    this@BaseActivity,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) + ContextCompat
-                    .checkSelfPermission(
-                        this@BaseActivity,
-                        Manifest.permission.RECORD_AUDIO
-                    )
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG).show()
+                toggle = true
+                serviceIntent!!.putExtra("inputExtra", "Screen Recording in Progress")
+                ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
+                if (ContextCompat.checkSelfPermission(
                         this@BaseActivity,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) ||
-                    ActivityCompat.shouldShowRequestPermissionRationale(
-                        this@BaseActivity,
-                        Manifest.permission.RECORD_AUDIO
-                    )
+                    ) + ContextCompat
+                        .checkSelfPermission(
+                            this@BaseActivity,
+                            Manifest.permission.RECORD_AUDIO
+                        )
+                    != PackageManager.PERMISSION_GRANTED
                 ) {
-                    toggle = false
-                    Snackbar.make(
-                        findViewById(android.R.id.content), R.string.label_permissions,
-                        Snackbar.LENGTH_INDEFINITE
-                    ).setAction(
-                        "ENABLE"
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            this@BaseActivity,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        ) ||
+                        ActivityCompat.shouldShowRequestPermissionRationale(
+                            this@BaseActivity,
+                            Manifest.permission.RECORD_AUDIO
+                        )
                     ) {
+                        toggle = false
+                        Snackbar.make(
+                            findViewById(android.R.id.content), R.string.label_permissions,
+                            Snackbar.LENGTH_INDEFINITE
+                        ).setAction(
+                            "ENABLE"
+                        ) {
+                            ActivityCompat.requestPermissions(
+                                this@BaseActivity,
+                                arrayOf(
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.RECORD_AUDIO
+                                ),
+                                REQUEST_PERMISSIONS
+                            )
+                        }.show()
+                    } else {
                         ActivityCompat.requestPermissions(
                             this@BaseActivity,
                             arrayOf(
@@ -175,20 +185,10 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
                             ),
                             REQUEST_PERMISSIONS
                         )
-                    }.show()
+                    }
                 } else {
-                    ActivityCompat.requestPermissions(
-                        this@BaseActivity,
-                        arrayOf(
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.RECORD_AUDIO
-                        ),
-                        REQUEST_PERMISSIONS
-                    )
-                }
-            } else {
-                onToggleScreenShare()
-            } }
+                    onToggleScreenShare()
+                } }
         }
         else {
             builder.setNegativeButton("Stop Video") { dialogInterface, which ->
@@ -271,6 +271,8 @@ open class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener
             stopService(serviceIntent)
             mMediaRecorder!!.stop()
             mMediaRecorder!!.reset()
+            var dialog=FormFragment.getNewInstance(filePath)
+            dialog.show(supportFragmentManager,"formFragment")
             Log.v(TAG, "Stopping Recording")
             stopScreenSharing()
         }

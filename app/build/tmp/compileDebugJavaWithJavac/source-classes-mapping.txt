@@ -1,0 +1,12 @@
+com/example/gestures/BuildConfig.java
+ com.example.gestures.BuildConfig
+io/realm/DefaultRealmModuleMediator.java
+ io.realm.DefaultRealmModuleMediator
+io/realm/DefaultRealmModule.java
+ io.realm.DefaultRealmModule
+io/realm/com_example_gestures_BugDataModelRealmProxy.java
+ io.realm.com_example_gestures_BugDataModelRealmProxy
+ io.realm.com_example_gestures_BugDataModelRealmProxy$BugDataModelColumnInfo
+ io.realm.com_example_gestures_BugDataModelRealmProxy$ClassNameHelper
+io/realm/com_example_gestures_BugDataModelRealmProxyInterface.java
+ io.realm.com_example_gestures_BugDataModelRealmProxyInterface
