@@ -10,6 +10,8 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.example.gestures.R
 import com.example.gestures.activities.MainActivity
+import com.example.gestures.Constants
+import com.example.gestures.activities.BaseActivity
 
 class ForegroundService : Service() {
     override fun onCreate() {
@@ -17,15 +19,15 @@ class ForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val input = intent.getStringExtra("inputExtra")
+        val input = intent.getStringExtra(Constants.foregroundNotifKey)
         createNotificationChannel()
-        val notificationIntent = Intent(this, MainActivity::class.java)
+        val notificationIntent = Intent(this, BaseActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,
             0, notificationIntent, 0
         )
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Foreground Service")
+        val notification = NotificationCompat.Builder(this, Constants.foregroundChannelID)
+            .setContentTitle(Constants.foregroundTitle)
             .setContentText(input)
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setContentIntent(pendingIntent)
@@ -48,8 +50,8 @@ class ForegroundService : Service() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
-                CHANNEL_ID,
-                "Foreground Service Channel",
+                Constants.foregroundChannelID,
+                Constants.foregroundChannelName,
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(
@@ -57,9 +59,5 @@ class ForegroundService : Service() {
             )
             manager.createNotificationChannel(serviceChannel)
         }
-    }
-
-    companion object {
-        const val CHANNEL_ID = "ForegroundServiceChannel"
     }
 }
