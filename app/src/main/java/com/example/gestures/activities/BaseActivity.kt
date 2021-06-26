@@ -44,7 +44,18 @@ import org.json.JSONObject
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.gestures.Constants
 
+object LocalConstants{
+    const val ssBtn = "Screenshot"
+    const val ssProcess = "Taking Screenshot"
+    const val cancelBtn = "Cancel"
+    const val vidBtnStart = "Start Video"
+    const val vidBtnStop = "Stop Video"
+    const val vidProcessStart = "Screen Recording started"
+    const val vidProcessStop = "Screen Recording stopped"
+    const val nameDateFormat = "YYYY-MM-dd-hh-mm-ss-Ms"
+}
 
 abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener,
     GestureDetector.OnDoubleTapListener {
@@ -56,6 +67,8 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
 
     private lateinit var mDetector: GestureDetectorCompat
     private var mScreenDensity = 0
+    private var DISPLAY_WIDTH = 720
+    private var DISPLAY_HEIGHT = 1280
     private var mProjectionManager: MediaProjectionManager? = null
     private var mMediaProjection: MediaProjection? = null
     private var mVirtualDisplay: VirtualDisplay? = null
@@ -68,8 +81,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         var toggle: Boolean = false
         private const val TAG = "MainActivity"
         private const val REQUEST_CODE = 1000
-        private const val DISPLAY_WIDTH = 720
-        private const val DISPLAY_HEIGHT = 1280
+
         private val ORIENTATIONS = SparseIntArray()
         private const val REQUEST_PERMISSIONS = 10
 
@@ -88,7 +100,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
         serviceIntent = Intent(this, ForegroundService::class.java)
-        serviceIntent!!.putExtra("inputExtra", "Foreground Service Example in Android")
+        serviceIntent!!.putExtra(Constants.foregroundNotifKey, Constants.foregroundNotifVal)
         ContextCompat.startForegroundService(this, serviceIntent!!)
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
@@ -96,7 +108,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         mMediaRecorder = MediaRecorder()
         mProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
-
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return if (mDetector.onTouchEvent(event)) {
@@ -133,12 +144,11 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
 
 
         //performing positive action
-        builder.setPositiveButton("Screenshot") { dialogInterface, which ->
-            Toast.makeText(applicationContext, "Taking screenshot", Toast.LENGTH_LONG).show()
+        builder.setPositiveButton(LocalConstants.ssBtn) { dialogInterface, which ->
+            Toast.makeText(applicationContext, LocalConstants.ssProcess, Toast.LENGTH_LONG).show()
             val rootView = window.decorView.findViewById<View>(android.R.id.content)
             val bitmap = getScreenShot(rootView)
             // if bitmap is not null then
-            // save it to gallery
             if (bitmap != null) {
                 saveBitmap(bitmap)
                 //call the form
@@ -148,21 +158,21 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             }
         }
         //performing cancel action
-        builder.setNeutralButton("Cancel") { dialogInterface, which ->
+        builder.setNeutralButton(LocalConstants.cancelBtn) { dialogInterface, which ->
             Toast.makeText(
                 applicationContext,
                 "clicked cancel\n operation cancel",
                 Toast.LENGTH_LONG
             ).show()
         }
-        //performing negative action
 
+        //performing negative action
         if (toggle == false) {
-            builder.setNegativeButton("Start Video") { dialogInterface, which ->
-                Toast.makeText(applicationContext, "Video recording started", Toast.LENGTH_LONG)
+            builder.setNegativeButton(LocalConstants.vidBtnStart) { dialogInterface, which ->
+                Toast.makeText(applicationContext, LocalConstants.vidProcessStart, Toast.LENGTH_LONG)
                     .show()
                 toggle = true
-                serviceIntent!!.putExtra("inputExtra", "Screen Recording in Progress")
+                serviceIntent!!.putExtra(Constants.foregroundNotifKey, LocalConstants.vidProcessStart)
                 ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
                 if (ContextCompat.checkSelfPermission(
                         this@BaseActivity,
@@ -214,8 +224,8 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
                 }
             }
         } else {
-            builder.setNegativeButton("Stop Video") { dialogInterface, which ->
-                Toast.makeText(applicationContext, "Video recording stopped", Toast.LENGTH_LONG)
+            builder.setNegativeButton(LocalConstants.vidBtnStop) { dialogInterface, which ->
+                Toast.makeText(applicationContext, LocalConstants.vidProcessStop, Toast.LENGTH_LONG)
                     .show()
                 toggle = false
                 onToggleScreenShare()
@@ -294,11 +304,18 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             mMediaRecorder!!.reset()
             var dialog = FormFragment.getNewInstance(filePath)
             dialog.show(supportFragmentManager, "formFragment")
-            Log.v(TAG, "Stopping Recording")
+            Log.v(TAG, LocalConstants.vidProcessStop)
             stopScreenSharing()
         }
     }
 
+    private fun setScreenMetrics() {
+        val metrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(metrics)
+        mScreenDensity = metrics.densityDpi
+        DISPLAY_WIDTH = metrics.widthPixels
+        DISPLAY_HEIGHT = metrics.heightPixels
+    }
 
     private fun shareScreen() {
         if (mMediaProjection == null) {
@@ -323,7 +340,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         try {
             mMediaRecorder!!.reset()
             val date = Date()
-            val dateFormat = SimpleDateFormat("YYYY-MM-dd-hh-mm-ss-Ms")
+            val dateFormat = SimpleDateFormat(LocalConstants.nameDateFormat)
             dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
             val fileName = "/VID-" + dateFormat.format(date) + ".mp4"
             val directory: File = applicationContext.getDir("recordings", MODE_PRIVATE)
@@ -355,7 +372,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
                 toggle = false
                 mMediaRecorder!!.stop()
                 mMediaRecorder!!.reset()
-                Log.v(TAG, "Recording Stopped")
+                Log.v(TAG, LocalConstants.vidProcessStop)
             }
             mMediaProjection = null
             stopScreenSharing()
@@ -376,7 +393,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     public override fun onDestroy() {
         super.onDestroy()
         destroyMediaProjection()
-//        stopService(serviceIntent)
         toggle = false
     }
 
@@ -436,7 +452,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     private fun saveBitmap(bitmap: Bitmap) {
         // Generating a file name
         val date = Date()
-        val dateFormat = SimpleDateFormat("YYYY-MM-dd-hh-mm-ss-Ms")
+        val dateFormat = SimpleDateFormat(LocalConstants.nameDateFormat)
         dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
         val fileName = "SS-" + dateFormat.format(date) + ".jpg"
         val directory: File = applicationContext.getDir("screenshots", MODE_PRIVATE)
