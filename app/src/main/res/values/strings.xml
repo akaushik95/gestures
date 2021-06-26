@@ -2,4 +2,10 @@
     <string name="app_name">gestures</string>
     <string name="label_permissions">Please enable Microphone and Storage permissions.</string>
     <string name="error_occured">Something went wrong !!</string>
+    <string name="go_to_m2">Go To M2</string>
+    <string name="fetch_history_of_api_calls">Fetch API\'s history</string>
+    <string name="screen_2">Screen 2</string>
+    <string name="go_to_m3">Go To M3</string>
+    <string name="screen_3">Screen 3</string>
+    <string name="go_to_m4">Go To M4</string>
 </resources>

@@ -9,17 +9,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.example.gestures.R
 import com.example.gestures.SendFile
+import com.example.gestures.models.ApiFormData
 import kotlinx.android.synthetic.main.data_input.*
 import kotlinx.android.synthetic.main.data_input.view.*
 import kotlinx.android.synthetic.main.form_fragment_dialog.view.*
 import java.io.File
 
 
-class FormFragment: DialogFragment(){
+class FormFragment : DialogFragment() {
 
     val TAG: String = "FormFragment"
 
-    companion object{
+    companion object {
         val FILE_PATH: String = "filePath"
         fun getNewInstance(filePath: String): FormFragment {
             val fragment = FormFragment()
@@ -30,19 +31,16 @@ class FormFragment: DialogFragment(){
         }
     }
 
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var rootView: View = inflater.inflate(R.layout.form_fragment_dialog,container,false)
+        val rootView: View = inflater.inflate(R.layout.form_fragment_dialog, container, false)
 
         rootView.text_filepath.text = this.requireArguments().getString(FILE_PATH)
-        rootView.btn_submitData.setOnClickListener{
+        rootView.btn_submitData.setOnClickListener {
             try {
-
                 val country: String = edt_country.text.toString()
                 val summary: String = edt_summary.text.toString()
                 val description: String = edt_description.text.toString()
@@ -52,38 +50,19 @@ class FormFragment: DialogFragment(){
 
                 val filePath: String = this.requireArguments().getString(FILE_PATH).toString()
 
-                //////////////////// SLACK API TEST ///////////////////
+                val apiFormData = ApiFormData(country, summary, description, selectType, fixingPriority, platform, File(filePath))
+                SendFile.uploadText(apiFormData)
 
-                val formdata = arrayOf(country,summary,description,
-                                        selectType,fixingPriority,platform)
-
-                SendFile.uploadtext(formdata, File(filePath))
-
-
-                ///////////////////////////////////////////////////////
-                clearFields()
                 dismiss()
 
-            }catch (e:Exception){
+            } catch (e: Exception) {
                 Log.d(TAG, getString(R.string.error_occured))
             }
         }
-        rootView.btn_cancel.setOnClickListener{
+        rootView.btn_cancel.setOnClickListener {
             dismiss()
         }
-
         return rootView
-    }
-
-
-    fun clearFields(){
-
-        edt_country.setText("")
-        edt_summary.setText("")
-        edt_description.setText("")
-        edt_selectType.setText("")
-        edt_fixingPriority.setText("")
-        edt_platform.setText("")
     }
 
 
