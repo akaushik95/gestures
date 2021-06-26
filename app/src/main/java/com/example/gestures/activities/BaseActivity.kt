@@ -32,6 +32,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.gestures.ApiDataModel
+import com.example.gestures.AppMediaRecorder
 import com.example.gestures.service.ForegroundService
 import com.example.gestures.fragments.FormFragment
 import com.example.gestures.R
@@ -73,7 +74,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     private var mMediaProjection: MediaProjection? = null
     private var mVirtualDisplay: VirtualDisplay? = null
     private var mMediaProjectionCallback: MediaProjectionCallback? = null
-    private var mMediaRecorder: MediaRecorder? = null
     private var serviceIntent: Intent? = null
     private lateinit var filePath: String
 
@@ -105,7 +105,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
         mScreenDensity = metrics.densityDpi
-        mMediaRecorder = MediaRecorder()
         mProjectionManager = getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
 
@@ -291,7 +290,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         mMediaProjection = mProjectionManager!!.getMediaProjection(resultCode, data!!)
         with(mMediaProjection) { this?.registerCallback(mMediaProjectionCallback, null) }
         mVirtualDisplay = createVirtualDisplay()
-        mMediaRecorder!!.start()
+        AppMediaRecorder.fetchMediaRecorder().start()
     }
 
     fun onToggleScreenShare() {
@@ -300,8 +299,8 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             shareScreen()
         } else {
             stopService(serviceIntent)
-            mMediaRecorder!!.stop()
-            mMediaRecorder!!.reset()
+            AppMediaRecorder.fetchMediaRecorder().stop()
+            AppMediaRecorder.fetchMediaRecorder().reset()
             var dialog = FormFragment.getNewInstance(filePath)
             dialog.show(supportFragmentManager, "formFragment")
             Log.v(TAG, LocalConstants.vidProcessStop)
@@ -323,7 +322,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             return
         }
         mVirtualDisplay = createVirtualDisplay()
-        mMediaRecorder!!.start()
+        AppMediaRecorder.fetchMediaRecorder().start()
     }
 
     private fun createVirtualDisplay(): VirtualDisplay {
@@ -331,14 +330,14 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             "BaseActivity",
             DISPLAY_WIDTH, DISPLAY_HEIGHT, mScreenDensity,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            mMediaRecorder!!.surface, null /*Callbacks*/, null /*Handler*/
+            AppMediaRecorder.fetchMediaRecorder().surface, null /*Callbacks*/, null /*Handler*/
         )
     }
 
 
     private fun initRecorder() {
         try {
-            mMediaRecorder!!.reset()
+            AppMediaRecorder.fetchMediaRecorder().reset()
             val date = Date()
             val dateFormat = SimpleDateFormat(LocalConstants.nameDateFormat)
             dateFormat.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
@@ -347,19 +346,19 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             val file = File(directory, fileName)
             filePath = file.absolutePath
             Log.d(TAG + " DEBUG-VideoName", filePath)
-            mMediaRecorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
-            mMediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            mMediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
-            mMediaRecorder!!.setOutputFile(filePath)
-            mMediaRecorder!!.setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-            mMediaRecorder!!.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            mMediaRecorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-            mMediaRecorder!!.setVideoEncodingBitRate(512 * 1000)
-            mMediaRecorder!!.setVideoFrameRate(30)
+            AppMediaRecorder.fetchMediaRecorder().setAudioSource(MediaRecorder.AudioSource.MIC)
+            AppMediaRecorder.fetchMediaRecorder().setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            AppMediaRecorder.fetchMediaRecorder().setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            AppMediaRecorder.fetchMediaRecorder().setOutputFile(filePath)
+            AppMediaRecorder.fetchMediaRecorder().setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+            AppMediaRecorder.fetchMediaRecorder().setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            AppMediaRecorder.fetchMediaRecorder().setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+            AppMediaRecorder.fetchMediaRecorder().setVideoEncodingBitRate(512 * 1000)
+            AppMediaRecorder.fetchMediaRecorder().setVideoFrameRate(30)
             val rotation = windowManager.defaultDisplay.rotation
             val orientation = ORIENTATIONS[rotation + 90]
-            mMediaRecorder!!.setOrientationHint(orientation)
-            mMediaRecorder!!.prepare()
+            AppMediaRecorder.fetchMediaRecorder().setOrientationHint(orientation)
+            AppMediaRecorder.fetchMediaRecorder().prepare()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -370,8 +369,8 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         override fun onStop() {
             if (toggle == true) {
                 toggle = false
-                mMediaRecorder!!.stop()
-                mMediaRecorder!!.reset()
+                AppMediaRecorder.fetchMediaRecorder().stop()
+                AppMediaRecorder.fetchMediaRecorder().reset()
                 Log.v(TAG, LocalConstants.vidProcessStop)
             }
             mMediaProjection = null
