@@ -75,10 +75,10 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     private var mVirtualDisplay: VirtualDisplay? = null
     private var mMediaProjectionCallback: MediaProjectionCallback? = null
     private var serviceIntent: Intent? = null
-    private lateinit var filePath: String
 
     companion object {
         var toggle: Boolean = false
+        lateinit var filePath: String
         private const val TAG = "MainActivity"
         private const val REQUEST_CODE = 1000
 
