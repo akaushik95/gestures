@@ -1,53 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".activities.BaseActivity"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="20dp">
+    tools:context=".activities.BaseActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:padding="20dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_bug_details"
+            android:textColor="@color/white"
+            android:textSize="17sp" />
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            >
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
             <include
                 android:id="@+id/layout_include"
-                layout="@layout/data_input"/>
+                layout="@layout/data_input" />
 
             <LinearLayout
                 android:id="@+id/layout"
-                android:layout_below="@+id/layout_include"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:orientation="horizontal">
 
+                <Button
+                    android:id="@+id/btn_cancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginEnd="25dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@android:color/holo_red_dark"
+                    android:text="@string/cancel" />
 
                 <Button
                     android:id="@+id/btn_submitData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="25dp"
+                    android:layout_weight="1"
                     android:backgroundTint="@android:color/holo_green_dark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:text="Submit"
-                    android:layout_marginRight="25dp"
-                    android:layout_weight="1"/>
-
-                <Button
-                    android:id="@+id/btn_cancel"
-                    android:backgroundTint="@android:color/holo_red_dark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_marginLeft="25dp"
-                    android:text="Cancel"
-                    android:layout_weight="1"/>
+                    android:text="@string/submit" />
 
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-</RelativeLayout>
+</LinearLayout>

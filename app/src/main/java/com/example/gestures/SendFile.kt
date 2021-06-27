@@ -19,7 +19,7 @@ class SendFile {
 
             val textMessage =
                 String.format(
-                    ":firecracker: *Bug Reporter:* @admin\\n*`Country`*%s" +
+                    ":firecracker: *Bug Reporter:* @admin\\n*`Country`*India" +
                             "*`Summary`* %s" +
                             "*`Description`* %s\\n*`Select Type`*Customer" +
                             " *`Fixing Priority`*P0-Funnel_Breaking" +
@@ -28,7 +28,6 @@ class SendFile {
                             " *`Customer Request ID`*-" +
                             " *`Provider Id`* -" +
                             " *`Customer Id`* 601234526271888",
-                    apiFormData.country,
                     apiFormData.summary,
                     apiFormData.description
                 )
@@ -72,7 +71,7 @@ class SendFile {
                     RequestBody.create(MEDIA_TYPE_PNG, file)
                 )
                 .addFormDataPart("channel", "XXXX")
-                .addFormDataPart("ts", ts).build()
+                .addFormDataPart("thread_ts", ts).build()
 
             val request = Request.Builder()
                 .url(uploadAttachmentUrl)
@@ -102,7 +101,7 @@ class SendFile {
 
             val textMessage =
                 String.format(
-                    ":firecracker: *Bug Reporter:* @admin\\n*`API URL`*%s" +
+                            "*`API URL`*%s" +
                             "*`API Request`* %s" +
                             "*`API Response`* %s",
                     apiData.apiUrl,
@@ -113,7 +112,7 @@ class SendFile {
             val jsonObject = JSONObject()
             jsonObject.put("channel", "xyz")
             jsonObject.put("text", textMessage)
-            jsonObject.put("ts",ts)
+            jsonObject.put("thread_ts",ts)
             val jsonBody = RequestBody.create(
                 MediaType.parse("application/json"),
                 jsonObject.toString()
