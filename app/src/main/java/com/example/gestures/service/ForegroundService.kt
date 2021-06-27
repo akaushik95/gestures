@@ -5,19 +5,18 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.example.gestures.R
 import com.example.gestures.Constants
-import com.example.gestures.activities.BaseActivity
+import com.example.gestures.activities.Activity1
 
 class ForegroundService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val input = intent.getStringExtra(Constants.foregroundNotifKey)
         createNotificationChannel()
-        val notificationIntent = Intent(this, BaseActivity::class.java)
+        val notificationIntent = Intent(this, Activity1::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,
             0, notificationIntent, 0

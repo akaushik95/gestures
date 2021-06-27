@@ -47,9 +47,9 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-object LocalConstants{
-    const val ssBtn = "Screenshot"
-    const val ssProcess = "Taking Screenshot"
+object LocalConstants {
+    const val ssAction = "Screenshot"
+    const val takingSs = "Taking Screenshot"
     const val cancelBtn = "Cancel"
     const val vidBtnStart = "Start Video"
     const val vidBtnStop = "Stop Video"
@@ -70,16 +70,17 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     private var mScreenDensity = 0
     private var DISPLAY_WIDTH = 720
     private var DISPLAY_HEIGHT = 1280
-    private var mProjectionManager: MediaProjectionManager? = null
-    private var mMediaProjection: MediaProjection? = null
-    private var mVirtualDisplay: VirtualDisplay? = null
-    private var mMediaProjectionCallback: MediaProjectionCallback? = null
-    private var serviceIntent: Intent? = null
-    private lateinit var filePath: String
 
 
     companion object {
         var toggle: Boolean = false
+        var mMediaProjection: MediaProjection? = null
+        var mMediaProjectionCallback: MediaProjectionCallback? = null
+        var mVirtualDisplay: VirtualDisplay? = null
+        var mProjectionManager: MediaProjectionManager? = null
+        var serviceIntent: Intent? = null
+
+        private lateinit var filePath: String
         private const val TAG = "MainActivity"
         private const val REQUEST_CODE = 1000
 
@@ -100,9 +101,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         realm = Realm.getDefaultInstance()
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
-        serviceIntent = Intent(this, ForegroundService::class.java)
-        serviceIntent!!.putExtra(Constants.foregroundNotifKey, Constants.foregroundNotifVal)
-        ContextCompat.startForegroundService(this, serviceIntent!!)
         val metrics = DisplayMetrics()
         windowManager.defaultDisplay.getMetrics(metrics)
         mScreenDensity = metrics.densityDpi
@@ -142,21 +140,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         builder.setMessage("ss/video")
         builder.setIcon(android.R.drawable.ic_dialog_alert)
 
-
-        //performing positive action
-        builder.setPositiveButton(LocalConstants.ssBtn) { dialogInterface, which ->
-            Toast.makeText(applicationContext, LocalConstants.ssProcess, Toast.LENGTH_LONG).show()
-            val rootView = window.decorView.findViewById<View>(android.R.id.content)
-            val bitmap = getScreenShot(rootView)
-            // if bitmap is not null then
-            if (bitmap != null) {
-                saveBitmap(bitmap)
-                //call the form
-                var dialog = FormFragment.getNewInstance(filePath)
-                dialog.show(supportFragmentManager, "formFragment")
-
-            }
-        }
         //performing cancel action
         builder.setNeutralButton(LocalConstants.cancelBtn) { dialogInterface, which ->
             Toast.makeText(
@@ -168,11 +151,35 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
 
         //performing negative action
         if (toggle == false) {
+            //performing positive action
+            builder.setPositiveButton(LocalConstants.ssAction) { dialogInterface, which ->
+                Toast.makeText(applicationContext, LocalConstants.takingSs, Toast.LENGTH_LONG)
+                    .show()
+                val rootView = window.decorView.findViewById<View>(android.R.id.content)
+                val bitmap = getScreenShot(rootView)
+                // if bitmap is not null then
+                if (bitmap != null) {
+                    saveBitmap(bitmap)
+                    //call the form
+                    var dialog = FormFragment.getNewInstance(filePath)
+                    dialog.show(supportFragmentManager, "formFragment")
+
+                }
+            }
+
             builder.setNegativeButton(LocalConstants.vidBtnStart) { dialogInterface, which ->
-                Toast.makeText(applicationContext, LocalConstants.vidProcessStart, Toast.LENGTH_LONG)
+                Toast.makeText(
+                    applicationContext,
+                    LocalConstants.vidProcessStart,
+                    Toast.LENGTH_LONG
+                )
                     .show()
                 toggle = true
-                serviceIntent!!.putExtra(Constants.foregroundNotifKey, LocalConstants.vidProcessStart)
+                serviceIntent = Intent(this, ForegroundService::class.java)
+                serviceIntent!!.putExtra(
+                    Constants.foregroundNotifKey,
+                    LocalConstants.vidProcessStart
+                )
                 ContextCompat.startForegroundService(applicationContext, serviceIntent!!)
                 if (ContextCompat.checkSelfPermission(
                         this@BaseActivity,
@@ -318,12 +325,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     }
 
     private fun shareScreen() {
-        if (mMediaProjection == null) {
-            startActivityForResult(mProjectionManager!!.createScreenCaptureIntent(), REQUEST_CODE)
-            return
-        }
-        mVirtualDisplay = createVirtualDisplay()
-        AppMediaRecorder.fetchMediaRecorder().start()
+        startActivityForResult(mProjectionManager!!.createScreenCaptureIntent(), REQUEST_CODE)
     }
 
     private fun createVirtualDisplay(): VirtualDisplay {
@@ -349,7 +351,8 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             Log.d(TAG + " DEBUG-VideoName", filePath)
             AppMediaRecorder.fetchMediaRecorder().setAudioSource(MediaRecorder.AudioSource.MIC)
             AppMediaRecorder.fetchMediaRecorder().setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            AppMediaRecorder.fetchMediaRecorder().setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+            AppMediaRecorder.fetchMediaRecorder()
+                .setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             AppMediaRecorder.fetchMediaRecorder().setOutputFile(filePath)
             AppMediaRecorder.fetchMediaRecorder().setVideoSize(DISPLAY_WIDTH, DISPLAY_HEIGHT)
             AppMediaRecorder.fetchMediaRecorder().setVideoEncoder(MediaRecorder.VideoEncoder.H264)
@@ -365,8 +368,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         }
     }
 
-
-    private inner class MediaProjectionCallback : MediaProjection.Callback() {
+    inner class MediaProjectionCallback : MediaProjection.Callback() {
         override fun onStop() {
             if (toggle == true) {
                 toggle = false
@@ -385,23 +387,23 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             return
         }
         stopService(serviceIntent)
-        mVirtualDisplay!!.release()
+        mVirtualDisplay.let {
+            it?.release()
+        }
         destroyMediaProjection()
     }
 
 
     public override fun onDestroy() {
         super.onDestroy()
-        destroyMediaProjection()
-        toggle = false
     }
 
 
     private fun destroyMediaProjection() {
-        if (mMediaProjection != null) {
-            mMediaProjection!!.unregisterCallback(mMediaProjectionCallback)
-            mMediaProjection!!.stop()
-            mMediaProjection!!
+        mMediaProjection.let {
+            if (mMediaProjectionCallback != null)
+                it?.unregisterCallback(mMediaProjectionCallback)
+            it?.stop()
         }
         Log.i(TAG, "MediaProjection Stopped")
     }
@@ -558,8 +560,6 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         queue.add(stringRequest)
     }
 
-    abstract fun getApiHistoryListView() : ListView?
-
-
+    abstract fun getApiHistoryListView(): ListView?
 
 }
