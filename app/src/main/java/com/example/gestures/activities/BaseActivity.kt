@@ -29,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
+import androidx.fragment.app.DialogFragment
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
@@ -36,6 +37,7 @@ import com.android.volley.toolbox.Volley
 import com.example.gestures.*
 import com.example.gestures.fragments.FormFragment
 import com.example.gestures.models.ApiFormData
+import com.example.gestures.models.ApiResponseDataModel
 import com.example.gestures.service.ForegroundService
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
@@ -159,9 +161,22 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
                     saveBitmap(bitmap)
                     //call the form
                     val dataModels: List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
-                        .sort("createdAt", Sort.ASCENDING)
+                        .sort("createdAt", Sort.DESCENDING)
                         .findAll()
-                    var dialog = FormFragment.getNewInstance(filePath, dataModels.get(0))
+                    var apiResponseDataModel: ApiResponseDataModel? = null
+                    if (dataModels.size > 0) {
+                        apiResponseDataModel = ApiResponseDataModel(
+                            dataModels[0].apiUrl,
+                            dataModels[0].apiRequest,
+                            dataModels[0].apiResponse,
+                            dataModels[0].createdAt
+                        )
+                    }
+                    val dialog: DialogFragment
+                    if(apiResponseDataModel == null)
+                        dialog = FormFragment.getNewInstance(filePath)
+                    else
+                        dialog = FormFragment.getNewInstance(filePath, apiResponseDataModel)
                     dialog.show(supportFragmentManager, "formFragment")
 
                 }
@@ -316,7 +331,20 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             val dataModels: List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
                 .sort("createdAt", Sort.ASCENDING)
                 .findAll()
-            var dialog = FormFragment.getNewInstance(filePath, dataModels.get(0))
+            var apiResponseDataModel: ApiResponseDataModel? = null
+            if (dataModels.size > 0) {
+                apiResponseDataModel = ApiResponseDataModel(
+                    dataModels[0].apiUrl,
+                    dataModels[0].apiRequest,
+                    dataModels[0].apiResponse,
+                    dataModels[0].createdAt
+                )
+            }
+            val dialog: DialogFragment
+            if(apiResponseDataModel == null)
+                dialog = FormFragment.getNewInstance(filePath)
+            else
+                dialog = FormFragment.getNewInstance(filePath, apiResponseDataModel)
             dialog.show(supportFragmentManager, "formFragment")
             Log.v(TAG, LocalConstants.vidProcessStop)
             stopScreenSharing()
@@ -567,7 +595,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         queue.add(stringRequest)
     }
 
-    fun uploadErrorLog(apiFormData: ApiFormData, apiDataModel: ApiDataModel?) {
+    fun uploadErrorLog(apiFormData: ApiFormData, apiDataModel: ApiResponseDataModel?) {
         SendFile.uploadText(apiFormData, apiDataModel, this)
         showProgressDialog()
     }
@@ -582,7 +610,9 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     }
 
     override fun showToast(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        runOnUiThread() {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     abstract fun getApiHistoryListView(): ListView?

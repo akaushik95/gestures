@@ -1,11 +1,8 @@
 package com.example.gestures
 
-import android.os.Parcelable
 import io.realm.RealmObject
-import kotlinx.android.parcel.Parcelize
 
-@Parcelize
-open class ApiDataModel : RealmObject(), Parcelable {
+open class ApiDataModel : RealmObject(){
     var apiUrl: String = ""
     var apiRequest: String = ""
     var apiResponse: String = ""
