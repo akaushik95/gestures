@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import com.example.gestures.ApiDataModel
 import com.example.gestures.R
 import com.example.gestures.SendFile
+import com.example.gestures.activities.BaseActivity
 import com.example.gestures.models.ApiFormData
 import kotlinx.android.synthetic.main.data_input.*
 import kotlinx.android.synthetic.main.data_input.view.*
@@ -51,7 +52,7 @@ class FormFragment : DialogFragment() {
 
                 val apiFormData = ApiFormData(summary, description, File(filePath))
 
-                SendFile.uploadText(apiFormData, this.arguments?.getParcelable(LAST_API))
+                (activity as BaseActivity).uploadErrorLog(apiFormData, this.arguments?.getParcelable(LAST_API))
                 // SendFile.uploadText(apiFormData,apiData) // apiData -> ApiDataModel
                 dismiss()
 
