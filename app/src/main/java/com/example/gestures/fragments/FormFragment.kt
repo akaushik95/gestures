@@ -41,13 +41,12 @@ class FormFragment : DialogFragment() {
         rootView.text_filepath.text = this.requireArguments().getString(FILE_PATH)
         rootView.btn_submitData.setOnClickListener {
             try {
-                val country: String = edt_country.text.toString()
                 val summary: String = edt_summary.text.toString()
                 val description: String = edt_description.text.toString()
 
                 val filePath: String = this.requireArguments().getString(FILE_PATH).toString()
 
-                val apiFormData = ApiFormData(country, summary, description, File(filePath))
+                val apiFormData = ApiFormData(summary, description, File(filePath))
                 SendFile.uploadText(apiFormData)
 
                 dismiss()

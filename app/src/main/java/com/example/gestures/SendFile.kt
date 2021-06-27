@@ -19,7 +19,7 @@ class SendFile {
 
             val textMessage =
                 String.format(
-                    ":firecracker: *Bug Reporter:* @admin\\n*`Country`*%s" +
+                    ":firecracker: *Bug Reporter:* @admin\\n*`Country`*India" +
                             "*`Summary`* %s" +
                             "*`Description`* %s\\n*`Select Type`*Customer" +
                             " *`Fixing Priority`*P0-Funnel_Breaking" +
@@ -28,7 +28,6 @@ class SendFile {
                             " *`Customer Request ID`*-" +
                             " *`Provider Id`* -" +
                             " *`Customer Id`* 601234526271888",
-                    apiFormData.country,
                     apiFormData.summary,
                     apiFormData.description
                 )
