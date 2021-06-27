@@ -67,23 +67,23 @@ class SendFile {
 
         fun uploadAttachment(file: File, ts: String, apiDataModel: ApiDataModel?) {
             val uploadAttachmentUrl = "https://slack.com/api/files.upload"
-            val MEDIA_TYPE_PNG = MediaType.parse("application/octet-stream")
+            val MEDIA_TYPE = MediaType.parse("application/octet-stream")
 
-            val jsonObject = JSONObject()
-            jsonObject.put("as_user", false)
-            jsonObject.put("username", "Admin")
-            jsonObject.put("icon_emoji", ":male_vampire:")
-            jsonObject.put("thread_ts", ts)
-            val jsonBodyRequest = RequestBody.create(
-                MediaType.parse("application/json"),
-                jsonObject.toString()
-            )
+//            val jsonObject = JSONObject()
+//            jsonObject.put("as_user", false)
+//            jsonObject.put("username", "Admin")
+//            jsonObject.put("icon_emoji", ":male_vampire:")
+//            jsonObject.put("thread_ts", ts)
+//            val jsonBodyRequest = RequestBody.create(
+//                MediaType.parse("application/json"),
+//                jsonObject.toString()
+//            )
 
             val req: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart(
                     "file",
-                    "UC_BUG",
-                    RequestBody.create(MEDIA_TYPE_PNG, file)
+                    file.name,
+                    RequestBody.create(MEDIA_TYPE, file)
                 )
                 .addFormDataPart("channels", "CFD5QKJE9")
 //                .addPart(jsonBodyRequest)
@@ -104,6 +104,7 @@ class SendFile {
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
+                    Log.d(TAG, response.body().toString())
                     // call UploadApiData Function
 //                    if (apiDataModel != null)
 //                        uploadApiData(apiDataModel, ts)
