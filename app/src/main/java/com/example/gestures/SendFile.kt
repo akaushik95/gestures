@@ -3,6 +3,7 @@ package com.example.gestures
 import android.util.Log
 import com.example.gestures.activities.InteractionListenr
 import com.example.gestures.models.ApiFormData
+import com.example.gestures.models.ApiResponseDataModel
 import okhttp3.*
 import org.json.JSONObject
 import java.io.File
@@ -14,9 +15,13 @@ class SendFile {
         val token = "-"
         val TAG = "SEND_FILE"
         val channelID = "C193X1VMM"
-        var listenr : InteractionListenr? = null
+        var listenr: InteractionListenr? = null
 
-        fun uploadText(apiFormData: ApiFormData, apiDataModel: ApiDataModel?, interactionListenr: InteractionListenr) {
+        fun uploadText(
+            apiFormData: ApiFormData,
+            apiDataModel: ApiResponseDataModel?,
+            interactionListenr: InteractionListenr
+        ) {
             this.listenr = interactionListenr
             val client = OkHttpClient()
             val uploadBugUrl = "https://slack.com/api/chat.postMessage"
@@ -55,7 +60,7 @@ class SendFile {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     listenr?.dismissProgressDialog()
-                    listenr?.showToast(e.localizedMessage?:"Failed to log bug")
+                    listenr?.showToast(e.localizedMessage ?: "Failed to log bug")
                     e.printStackTrace()
                 }
 
@@ -73,7 +78,7 @@ class SendFile {
             })
         }
 
-        fun uploadAttachment(file: File, ts: String, apiDataModel: ApiDataModel?) {
+        fun uploadAttachment(file: File, ts: String, apiDataModel: ApiResponseDataModel?) {
 
             val uploadAttachmentUrl = "https://slack.com/api/files.upload"
             val MEDIA_TYPE = MediaType.parse("application/octet-stream")
@@ -99,32 +104,30 @@ class SendFile {
             val response = client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     listenr?.dismissProgressDialog()
-                    listenr?.showToast(e.localizedMessage?:"Failed to upload attachment")
+                    listenr?.showToast(e.localizedMessage ?: "Failed to upload attachment")
                     e.printStackTrace()
                 }
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
-                    listenr?.dismissProgressDialog()
-                    listenr?.showToast("Bug filled successfully")
                     Log.d(TAG, response.body().toString())
                     // call UploadApiData Function
-//                    if (apiDataModel != null)
-//                        uploadApiData(apiDataModel, ts)
+                    if (apiDataModel != null)
+                        uploadApiData(apiDataModel, ts)
                 }
             })
 
         }
 
-        fun uploadApiData(apiData: ApiDataModel, ts: String) {
+        fun uploadApiData(apiData: ApiResponseDataModel, ts: String) {
             val client = OkHttpClient()
             val uploadBugUrl = "https://slack.com/api/chat.postMessage"
 
             val textMessage =
                 String.format(
                     "*`API URL`* %s" +
-                            "*`API Request`* %s" +
-                            "*`API Response`* %s",
+                            " *`API Request`* %s" +
+                            " *`API Response`* %s",
                     apiData.apiUrl,
                     apiData.apiRequest,
                     apiData.apiResponse
@@ -151,12 +154,16 @@ class SendFile {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     e.printStackTrace()
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast(e.localizedMessage ?: "Failed to upload text message")
                 }
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     val ok = response.body()?.string()
                     Log.d(TAG, ok.toString())
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast("Bug filled successfully")
                 }
             })
         }
