@@ -33,18 +33,19 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.example.gestures.ApiDataModel
 import com.example.gestures.AppMediaRecorder
-import com.example.gestures.service.ForegroundService
-import com.example.gestures.fragments.FormFragment
+import com.example.gestures.Constants
 import com.example.gestures.R
+import com.example.gestures.fragments.FormFragment
+import com.example.gestures.service.ForegroundService
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
+import io.realm.Sort
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.data_input.*
 import org.json.JSONObject
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
-import com.example.gestures.Constants
 
 object LocalConstants {
     const val ssAction = "Screenshot"
@@ -62,13 +63,14 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
 
     var realm: Realm? = null
     val dataModelGlobal = ApiDataModel()
-    val MAX_DOCUMENTS_IN_DB = 3
+    val MAX_DOCUMENTS_IN_DB = 5
     val TAG: String = "BaseActivity"
 
     private lateinit var mDetector: GestureDetectorCompat
     private var mScreenDensity = 0
     private var DISPLAY_WIDTH = 720
     private var DISPLAY_HEIGHT = 1280
+
 
     companion object {
         var toggle: Boolean = false
@@ -471,44 +473,40 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     }
 
     fun manageDB() {
-        val dataModels: List<ApiDataModel> =
-            realm!!.where(ApiDataModel::class.java).findAll()
+        val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+            .sort("createdAt", Sort.ASCENDING)
+            .findAll()
 
         //delete from 0 index
-
-        if (dataModels.size == MAX_DOCUMENTS_IN_DB) {
+        Log.d(TAG,"size of db ${dataModels.size}")
+        if (dataModels.size > MAX_DOCUMENTS_IN_DB) {
             Log.d(TAG, "objects greater than $MAX_DOCUMENTS_IN_DB")
 
-//            for (i in (0..dataModels.size-2) ){
-//                dataModels[i].
-//            }
             realm!!.executeTransaction {
 
                 dataModels[0].deleteFromRealm()
+
             }
 
-//            var val3 = dataModels[3].apiUrl
-//            Log.d(TAG,"value at 3 $val3")
-            var val0 = dataModels[0].apiUrl
-            Log.d(TAG, "value at 0 $val0")
         }
 
     }
 
     fun addToDB(apiUrl: String, req: String, res: String) {
+        Log.d(TAG,"inside addToDB $apiUrl")
         try {
-            manageDB()
+
             dataModelGlobal.apiUrl = apiUrl
             dataModelGlobal.apiRequest = req
             dataModelGlobal.apiResponse = res
+            dataModelGlobal.createdAt = System.currentTimeMillis()
 
             realm!!.executeTransaction { realm -> realm.copyToRealm(dataModelGlobal) }
 
-            //Log.d(TAG,"dataModelGlobal in submit "+dataModelGlobal.toString())
 
             Log.d(TAG, "Api Data Inserted in DB!!! $apiUrl")
 
-
+            manageDB()
         } catch (e: Exception) {
             Log.d(TAG, "Something went Wrong !!!")
         }
@@ -518,8 +516,10 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         try {
             val apiHistoryListView = getApiHistoryListView()
             apiHistoryListView.let {
-                val dataModels: List<ApiDataModel> =
-                    realm!!.where(ApiDataModel::class.java).findAll()
+                val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+                    .sort("createdAt", Sort.ASCENDING)
+                    .findAll()
+
                 var arrayList = ArrayList<Any>()
                 for (i in dataModels.size - 1 downTo 0) {
                     Log.d(TAG, "index is $i")
@@ -561,4 +561,5 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     }
 
     abstract fun getApiHistoryListView(): ListView?
+
 }
