@@ -2,8 +2,6 @@ package com.example.gestures
 
 import android.util.Log
 import com.example.gestures.models.ApiFormData
-import com.example.gestures.models.SlackApiResponse
-import com.fasterxml.jackson.databind.ObjectMapper
 import okhttp3.*
 import org.json.JSONObject
 import java.io.File
@@ -12,18 +10,18 @@ import java.io.IOException
 class SendFile {
 
     companion object {
-        val token = "bearer xoxbstuff"
+        val token = "-"
         val TAG = "SEND_FILE"
 
         fun uploadText(apiFormData: ApiFormData, apiDataModel: ApiDataModel?) {
             val client = OkHttpClient()
-            val uploadBugUrl = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
+            val uploadBugUrl = "https://slack.com/api/chat.postMessage"
 
             val textMessage =
                 String.format(
-                    ":firecracker: *Bug Reporter:* @admin\\n*`Country`*India" +
+                    ":firecracker: *Bug Reporter:* @admin\n*`Country`*India" +
                             "*`Summary`* %s" +
-                            "*`Description`* %s\\n*`Select Type`*Customer" +
+                            "*`Description`* %s\n*`Select Type`*Customer" +
                             " *`Fixing Priority`*P0-Funnel_Breaking" +
                             " *`Platform`*Android" +
                             " *`App Version`*7.3.21" +
@@ -35,7 +33,7 @@ class SendFile {
                 )
 
             val jsonObject = JSONObject()
-            jsonObject.put("channel", "xyz")
+            jsonObject.put("channel", "CFD5QKJE9")
             jsonObject.put("text", textMessage)
             jsonObject.put("as_user", false)
             jsonObject.put("username", "Bug Reporter")
@@ -58,24 +56,24 @@ class SendFile {
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     val ok = response.body()?.string()
-                    val objectMapper= ObjectMapper()
-                    val slackApiResponse = objectMapper.readValue(response.body().toString(), SlackApiResponse::class.java)
+                    val threadTimestamp = JSONObject(ok).getString("ts")
                     Log.d(TAG, ok.toString())
                     // need to send thread_ts in case of slack_api
                     // uploadAttachment(apiFormData.file,"TimeStamp",apiData)
-                    uploadAttachment(apiFormData.file, slackApiResponse.threadTimestamp, apiDataModel)
+                    uploadAttachment(apiFormData.file, threadTimestamp, apiDataModel)
                 }
             })
         }
 
         fun uploadAttachment(file: File, ts: String, apiDataModel: ApiDataModel?) {
-            val uploadAttachmentUrl = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
+            val uploadAttachmentUrl = "https://slack.com/api/files.upload"
             val MEDIA_TYPE_PNG = MediaType.parse("application/octet-stream")
 
             val jsonObject = JSONObject()
             jsonObject.put("as_user", false)
             jsonObject.put("username", "Admin")
             jsonObject.put("icon_emoji", ":male_vampire:")
+            jsonObject.put("thread_ts", ts)
             val jsonBodyRequest = RequestBody.create(
                 MediaType.parse("application/json"),
                 jsonObject.toString()
@@ -84,17 +82,17 @@ class SendFile {
             val req: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart(
                     "file",
-                    "UC BUG",
+                    "UC_BUG",
                     RequestBody.create(MEDIA_TYPE_PNG, file)
                 )
-                .addFormDataPart("channel", "XXXX")
-                .addPart(jsonBodyRequest)
+                .addFormDataPart("channels", "CFD5QKJE9")
+//                .addPart(jsonBodyRequest)
                 .addFormDataPart("thread_ts", ts).build()
 
             val request = Request.Builder()
                 .url(uploadAttachmentUrl)
-                .post(req)
-                .header("Authorization", token)
+                .method("POST", req)
+                .addHeader("Authorization", token)
                 .build()
 
             val client = OkHttpClient()
@@ -107,8 +105,8 @@ class SendFile {
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     // call UploadApiData Function
-                    if (apiDataModel != null)
-                        uploadApiData(apiDataModel, ts)
+//                    if (apiDataModel != null)
+//                        uploadApiData(apiDataModel, ts)
                 }
             })
 
@@ -116,7 +114,7 @@ class SendFile {
 
         fun uploadApiData(apiData: ApiDataModel, ts: String) {
             val client = OkHttpClient()
-            val uploadBugUrl = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
+            val uploadBugUrl = "https://slack.com/api/chat.postMessage"
 
             val textMessage =
                 String.format(
@@ -129,7 +127,7 @@ class SendFile {
                 )
 
             val jsonObject = JSONObject()
-            jsonObject.put("channel", "xyz")
+            jsonObject.put("channel", "CFD5QKJE9")
             jsonObject.put("text", textMessage)
             jsonObject.put("thread_ts", ts)
             jsonObject.put("as_user", false)
