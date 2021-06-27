@@ -161,7 +161,10 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
                 if (bitmap != null) {
                     saveBitmap(bitmap)
                     //call the form
-                    var dialog = FormFragment.getNewInstance(filePath)
+                    val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+                        .sort("createdAt", Sort.ASCENDING)
+                        .findAll()
+                    var dialog = FormFragment.getNewInstance(filePath, dataModels.get(0))
                     dialog.show(supportFragmentManager, "formFragment")
 
                 }
@@ -309,7 +312,10 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             stopService(serviceIntent)
             AppMediaRecorder.fetchMediaRecorder().stop()
             AppMediaRecorder.fetchMediaRecorder().reset()
-            var dialog = FormFragment.getNewInstance(filePath)
+            val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+                .sort("createdAt", Sort.ASCENDING)
+                .findAll()
+            var dialog = FormFragment.getNewInstance(filePath, dataModels.get(0))
             dialog.show(supportFragmentManager, "formFragment")
             Log.v(TAG, LocalConstants.vidProcessStop)
             stopScreenSharing()
