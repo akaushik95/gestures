@@ -56,6 +56,7 @@ class SendFile {
                     val ok = response.body()?.string()
                     Log.d(TAG, ok.toString())
                     // need to send thread_ts in case of slack_api
+                    // uploadAttachment(apiFormData.file,"TimeStamp",apiData)
                     uploadAttachment(apiFormData.file, "TimeStamp")
                 }
             })
@@ -88,9 +89,52 @@ class SendFile {
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
+                    // call UploadApiData Function
+                    // uploadApiData(apiData,ts)
                 }
             })
 
+        }
+
+        fun uploadApiData(apiData : ApiDataModel,ts : String){
+            val client = OkHttpClient()
+            val uploadBugUrl = "https://webhook.site/f29bf86d-6952-4127-8e30-c421126147ee"
+
+            val textMessage =
+                String.format(
+                    ":firecracker: *Bug Reporter:* @admin\\n*`API URL`*%s" +
+                            "*`API Request`* %s" +
+                            "*`API Response`* %s",
+                    apiData.apiUrl,
+                    apiData.apiRequest,
+                    apiData.apiResponse
+                )
+
+            val jsonObject = JSONObject()
+            jsonObject.put("channel", "xyz")
+            jsonObject.put("text", textMessage)
+            jsonObject.put("ts",ts)
+            val jsonBody = RequestBody.create(
+                MediaType.parse("application/json"),
+                jsonObject.toString()
+            )
+            val request = Request.Builder()
+                .url(uploadBugUrl)
+                .post(jsonBody)
+                .header("Authorization", token)
+                .build()
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    e.printStackTrace()
+                }
+
+                @Throws(IOException::class)
+                override fun onResponse(call: Call, response: Response) {
+                    val ok = response.body()?.string()
+                    Log.d(TAG, ok.toString())
+                }
+            })
         }
     }
 }

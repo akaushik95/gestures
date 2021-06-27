@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import com.example.gestures.ApiDataModel
 import com.example.gestures.R
 import com.example.gestures.SendFile
 import com.example.gestures.models.ApiFormData
@@ -48,6 +49,7 @@ class FormFragment : DialogFragment() {
                 val filePath: String = this.requireArguments().getString(FILE_PATH).toString()
 
                 val apiFormData = ApiFormData(country, summary, description, File(filePath))
+                // SendFile.uploadText(apiFormData,apiData) // apiData -> ApiDataModel
                 SendFile.uploadText(apiFormData)
 
                 dismiss()
