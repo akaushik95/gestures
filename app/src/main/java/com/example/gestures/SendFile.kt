@@ -1,6 +1,7 @@
 package com.example.gestures
 
 import android.util.Log
+import com.example.gestures.activities.InteractionListenr
 import com.example.gestures.models.ApiFormData
 import okhttp3.*
 import org.json.JSONObject
@@ -12,8 +13,11 @@ class SendFile {
     companion object {
         val token = "-"
         val TAG = "SEND_FILE"
+        val channelID = "C193X1VMM"
+        var listenr : InteractionListenr? = null
 
-        fun uploadText(apiFormData: ApiFormData, apiDataModel: ApiDataModel?) {
+        fun uploadText(apiFormData: ApiFormData, apiDataModel: ApiDataModel?, interactionListenr: InteractionListenr) {
+            this.listenr = interactionListenr
             val client = OkHttpClient()
             val uploadBugUrl = "https://slack.com/api/chat.postMessage"
 
@@ -33,7 +37,7 @@ class SendFile {
                 )
 
             val jsonObject = JSONObject()
-            jsonObject.put("channel", "CFD5QKJE9")
+            jsonObject.put("channel", channelID)
             jsonObject.put("text", textMessage)
             jsonObject.put("as_user", false)
             jsonObject.put("username", "Bug Reporter")
@@ -50,6 +54,8 @@ class SendFile {
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast(e.localizedMessage?:"Failed to log bug")
                     e.printStackTrace()
                 }
 
@@ -60,24 +66,17 @@ class SendFile {
                     Log.d(TAG, ok.toString())
                     // need to send thread_ts in case of slack_api
                     // uploadAttachment(apiFormData.file,"TimeStamp",apiData)
+
+                    Thread.sleep(10000)
                     uploadAttachment(apiFormData.file, threadTimestamp, apiDataModel)
                 }
             })
         }
 
         fun uploadAttachment(file: File, ts: String, apiDataModel: ApiDataModel?) {
+
             val uploadAttachmentUrl = "https://slack.com/api/files.upload"
             val MEDIA_TYPE = MediaType.parse("application/octet-stream")
-
-//            val jsonObject = JSONObject()
-//            jsonObject.put("as_user", false)
-//            jsonObject.put("username", "Admin")
-//            jsonObject.put("icon_emoji", ":male_vampire:")
-//            jsonObject.put("thread_ts", ts)
-//            val jsonBodyRequest = RequestBody.create(
-//                MediaType.parse("application/json"),
-//                jsonObject.toString()
-//            )
 
             val req: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart(
@@ -85,8 +84,8 @@ class SendFile {
                     file.name,
                     RequestBody.create(MEDIA_TYPE, file)
                 )
-                .addFormDataPart("channels", "CFD5QKJE9")
-//                .addPart(jsonBodyRequest)
+                .addFormDataPart("channels", channelID)
+                .addFormDataPart("initial_comment", "Attachment added")
                 .addFormDataPart("thread_ts", ts).build()
 
             val request = Request.Builder()
@@ -99,11 +98,15 @@ class SendFile {
 
             val response = client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast(e.localizedMessage?:"Failed to upload attachment")
                     e.printStackTrace()
                 }
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast("Bug filled successfully")
                     Log.d(TAG, response.body().toString())
                     // call UploadApiData Function
 //                    if (apiDataModel != null)
@@ -128,7 +131,7 @@ class SendFile {
                 )
 
             val jsonObject = JSONObject()
-            jsonObject.put("channel", "CFD5QKJE9")
+            jsonObject.put("channel", channelID)
             jsonObject.put("text", textMessage)
             jsonObject.put("thread_ts", ts)
             jsonObject.put("as_user", false)
