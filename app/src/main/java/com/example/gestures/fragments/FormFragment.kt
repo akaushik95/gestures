@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import com.example.gestures.ApiDataModel
 import com.example.gestures.R
 import com.example.gestures.SendFile
 import com.example.gestures.models.ApiFormData
@@ -22,10 +23,12 @@ class FormFragment : DialogFragment() {
 
     companion object {
         val FILE_PATH: String = "filePath"
-        fun getNewInstance(filePath: String): FormFragment {
+        val LAST_API: String = "lastApi"
+        fun getNewInstance(filePath: String, apiModel: ApiDataModel): FormFragment {
             val fragment = FormFragment()
             val bundle = Bundle()
             bundle.putString(FILE_PATH, filePath)
+            bundle.putParcelable(LAST_API, apiModel)
             fragment.arguments = bundle
             return fragment
         }
@@ -47,8 +50,9 @@ class FormFragment : DialogFragment() {
                 val filePath: String = this.requireArguments().getString(FILE_PATH).toString()
 
                 val apiFormData = ApiFormData(summary, description, File(filePath))
-                SendFile.uploadText(apiFormData)
 
+                SendFile.uploadText(apiFormData, this.arguments?.getParcelable(LAST_API))
+                // SendFile.uploadText(apiFormData,apiData) // apiData -> ApiDataModel
                 dismiss()
 
             } catch (e: Exception) {

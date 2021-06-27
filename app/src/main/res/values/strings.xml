@@ -4,6 +4,7 @@
     <string name="error_occured">Something went wrong !!</string>
     <string name="go_to_m2">Go To Screen 2</string>
     <string name="fetch_history_of_api_calls">Fetch API\'s history</string>
+    <string name="screen_1">Screen 1</string>
     <string name="screen_2">Screen 2</string>
     <string name="go_to_m3">Go To Screen 3</string>
     <string name="screen_3">Screen 3</string>
@@ -16,6 +17,7 @@
     <string name="enter_bug_details">Enter Bug Details</string>
     <string name="cancel">Cancel</string>
     <string name="submit">Submit</string>
+    <string name="description_activity_1">This is description of page 1. Welocme to the app. Have a safe journey</string>
     <string name="description_activity_2">This is a random description of page 2 which does not make much sense but it is here to indicate that something is better than anything.</string>
     <string name="description_activity_3">This is another no-sense description of page 3 which too does not make much sense but as i said its always good to have some text here.</string>
     <string name="description_activity_4">This is description of page 4. Thats it . Simple and short</string>
