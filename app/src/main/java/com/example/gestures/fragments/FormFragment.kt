@@ -10,7 +10,9 @@ import androidx.fragment.app.DialogFragment
 import com.example.gestures.ApiDataModel
 import com.example.gestures.R
 import com.example.gestures.SendFile
+import com.example.gestures.activities.BaseActivity
 import com.example.gestures.models.ApiFormData
+import com.example.gestures.models.ApiResponseDataModel
 import kotlinx.android.synthetic.main.data_input.*
 import kotlinx.android.synthetic.main.data_input.view.*
 import kotlinx.android.synthetic.main.form_fragment_dialog.view.*
@@ -24,11 +26,19 @@ class FormFragment : DialogFragment() {
     companion object {
         val FILE_PATH: String = "filePath"
         val LAST_API: String = "lastApi"
-        fun getNewInstance(filePath: String, apiModel: ApiDataModel): FormFragment {
+        fun getNewInstance(filePath: String, apiModel: ApiResponseDataModel): FormFragment {
             val fragment = FormFragment()
             val bundle = Bundle()
             bundle.putString(FILE_PATH, filePath)
             bundle.putParcelable(LAST_API, apiModel)
+            fragment.arguments = bundle
+            return fragment
+        }
+
+        fun getNewInstance(filePath: String): FormFragment {
+            val fragment = FormFragment()
+            val bundle = Bundle()
+            bundle.putString(FILE_PATH, filePath)
             fragment.arguments = bundle
             return fragment
         }
@@ -51,7 +61,7 @@ class FormFragment : DialogFragment() {
 
                 val apiFormData = ApiFormData(summary, description, File(filePath))
 
-                SendFile.uploadText(apiFormData, this.arguments?.getParcelable(LAST_API))
+                (activity as BaseActivity).uploadErrorLog(apiFormData, this.arguments?.getParcelable(LAST_API))
                 // SendFile.uploadText(apiFormData,apiData) // apiData -> ApiDataModel
                 dismiss()
 

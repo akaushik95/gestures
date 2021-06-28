@@ -2,6 +2,7 @@ package com.example.gestures.activities
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -22,20 +23,21 @@ import android.view.Surface
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
+import androidx.fragment.app.DialogFragment
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
-import com.example.gestures.ApiDataModel
-import com.example.gestures.AppMediaRecorder
-import com.example.gestures.Constants
-import com.example.gestures.R
+import com.example.gestures.*
 import com.example.gestures.fragments.FormFragment
+import com.example.gestures.models.ApiFormData
+import com.example.gestures.models.ApiResponseDataModel
 import com.example.gestures.service.ForegroundService
 import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
@@ -46,6 +48,7 @@ import org.json.JSONObject
 import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 object LocalConstants {
     const val ssAction = "Screenshot"
@@ -59,7 +62,7 @@ object LocalConstants {
 }
 
 abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureListener,
-    GestureDetector.OnDoubleTapListener {
+    GestureDetector.OnDoubleTapListener, InteractionListenr {
 
     var realm: Realm? = null
     val dataModelGlobal = ApiDataModel()
@@ -73,15 +76,16 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
 
 
     companion object {
+        var dialog: ProgressDialog? = null
         var toggle: Boolean = false
         var mMediaProjection: MediaProjection? = null
         var mMediaProjectionCallback: MediaProjectionCallback? = null
         var mVirtualDisplay: VirtualDisplay? = null
         var mProjectionManager: MediaProjectionManager? = null
         var serviceIntent: Intent? = null
+        var interactionListenr: InteractionListenr? = null
 
         private lateinit var filePath: String
-        private const val TAG = "MainActivity"
         private const val REQUEST_CODE = 1000
 
         private val ORIENTATIONS = SparseIntArray()
@@ -98,6 +102,10 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_base)
+        if (dialog == null)
+            dialog = ProgressDialog(this)
+        if (interactionListenr == null)
+            interactionListenr = this
         realm = Realm.getDefaultInstance()
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setOnDoubleTapListener(this)
@@ -137,17 +145,8 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         //set title for alert dialog
         builder.setTitle("What would you like to do?")
         //set message for alert dialog
-        builder.setMessage("ss/video")
+        builder.setMessage("")
         builder.setIcon(android.R.drawable.ic_dialog_alert)
-
-        //performing cancel action
-        builder.setNeutralButton(LocalConstants.cancelBtn) { dialogInterface, which ->
-            Toast.makeText(
-                applicationContext,
-                "clicked cancel\n operation cancel",
-                Toast.LENGTH_LONG
-            ).show()
-        }
 
         //performing negative action
         if (toggle == false) {
@@ -161,10 +160,23 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
                 if (bitmap != null) {
                     saveBitmap(bitmap)
                     //call the form
-                    val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
-                        .sort("createdAt", Sort.ASCENDING)
+                    val dataModels: List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+                        .sort("createdAt", Sort.DESCENDING)
                         .findAll()
-                    var dialog = FormFragment.getNewInstance(filePath, dataModels.get(0))
+                    var apiResponseDataModel: ApiResponseDataModel? = null
+                    if (dataModels.size > 0) {
+                        apiResponseDataModel = ApiResponseDataModel(
+                            dataModels[0].apiUrl,
+                            dataModels[0].apiRequest,
+                            dataModels[0].apiResponse,
+                            dataModels[0].createdAt
+                        )
+                    }
+                    val dialog: DialogFragment
+                    if(apiResponseDataModel == null)
+                        dialog = FormFragment.getNewInstance(filePath)
+                    else
+                        dialog = FormFragment.getNewInstance(filePath, apiResponseDataModel)
                     dialog.show(supportFragmentManager, "formFragment")
 
                 }
@@ -244,8 +256,12 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         // Create the AlertDialog
         val alertDialog: AlertDialog = builder.create()
         // Set other dialog properties
-        alertDialog.setCancelable(false)
+        alertDialog.setCancelable(true)
         alertDialog.show()
+        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+            ?.setTextColor(resources.getColor(R.color.teal_700))
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            ?.setTextColor(resources.getColor(R.color.colorPrimary))
     }
 
     override fun onScroll(
@@ -312,10 +328,23 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
             stopService(serviceIntent)
             AppMediaRecorder.fetchMediaRecorder().stop()
             AppMediaRecorder.fetchMediaRecorder().reset()
-            val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+            val dataModels: List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
                 .sort("createdAt", Sort.ASCENDING)
                 .findAll()
-            var dialog = FormFragment.getNewInstance(filePath, dataModels.get(0))
+            var apiResponseDataModel: ApiResponseDataModel? = null
+            if (dataModels.size > 0) {
+                apiResponseDataModel = ApiResponseDataModel(
+                    dataModels[0].apiUrl,
+                    dataModels[0].apiRequest,
+                    dataModels[0].apiResponse,
+                    dataModels[0].createdAt
+                )
+            }
+            val dialog: DialogFragment
+            if(apiResponseDataModel == null)
+                dialog = FormFragment.getNewInstance(filePath)
+            else
+                dialog = FormFragment.getNewInstance(filePath, apiResponseDataModel)
             dialog.show(supportFragmentManager, "formFragment")
             Log.v(TAG, LocalConstants.vidProcessStop)
             stopScreenSharing()
@@ -479,12 +508,12 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     }
 
     fun manageDB() {
-        val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+        val dataModels: List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
             .sort("createdAt", Sort.ASCENDING)
             .findAll()
 
         //delete from 0 index
-        Log.d(TAG,"size of db ${dataModels.size}")
+        Log.d(TAG, "size of db ${dataModels.size}")
         if (dataModels.size > MAX_DOCUMENTS_IN_DB) {
             Log.d(TAG, "objects greater than $MAX_DOCUMENTS_IN_DB")
 
@@ -499,7 +528,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
     }
 
     fun addToDB(apiUrl: String, req: String, res: String) {
-        Log.d(TAG,"inside addToDB $apiUrl")
+        Log.d(TAG, "inside addToDB $apiUrl")
         try {
 
             dataModelGlobal.apiUrl = apiUrl
@@ -522,7 +551,7 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         try {
             val apiHistoryListView = getApiHistoryListView()
             apiHistoryListView.let {
-                val dataModels : List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
+                val dataModels: List<ApiDataModel> = realm!!.where(ApiDataModel::class.java)
                     .sort("createdAt", Sort.ASCENDING)
                     .findAll()
 
@@ -566,6 +595,32 @@ abstract class BaseActivity : AppCompatActivity(), GestureDetector.OnGestureList
         queue.add(stringRequest)
     }
 
+    fun uploadErrorLog(apiFormData: ApiFormData, apiDataModel: ApiResponseDataModel?) {
+        SendFile.uploadText(apiFormData, apiDataModel, this)
+        showProgressDialog()
+    }
+
+    override fun showProgressDialog() {
+        dialog?.setMessage("Uploading bug")
+        dialog?.show()
+    }
+
+    override fun dismissProgressDialog() {
+        dialog?.dismiss()
+    }
+
+    override fun showToast(message: String) {
+        runOnUiThread() {
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
     abstract fun getApiHistoryListView(): ListView?
 
+}
+
+interface InteractionListenr {
+    fun showProgressDialog()
+    fun dismissProgressDialog()
+    fun showToast(message: String)
 }

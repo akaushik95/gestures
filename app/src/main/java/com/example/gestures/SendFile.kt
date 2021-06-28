@@ -1,7 +1,9 @@
 package com.example.gestures
 
 import android.util.Log
+import com.example.gestures.activities.InteractionListenr
 import com.example.gestures.models.ApiFormData
+import com.example.gestures.models.ApiResponseDataModel
 import okhttp3.*
 import org.json.JSONObject
 import java.io.File
@@ -12,8 +14,15 @@ class SendFile {
     companion object {
         val token = "-"
         val TAG = "SEND_FILE"
+        val channelID = "C193X1VMM"
+        var listenr: InteractionListenr? = null
 
-        fun uploadText(apiFormData: ApiFormData, apiDataModel: ApiDataModel?) {
+        fun uploadText(
+            apiFormData: ApiFormData,
+            apiDataModel: ApiResponseDataModel?,
+            interactionListenr: InteractionListenr
+        ) {
+            this.listenr = interactionListenr
             val client = OkHttpClient()
             val uploadBugUrl = "https://slack.com/api/chat.postMessage"
 
@@ -33,7 +42,7 @@ class SendFile {
                 )
 
             val jsonObject = JSONObject()
-            jsonObject.put("channel", "CFD5QKJE9")
+            jsonObject.put("channel", channelID)
             jsonObject.put("text", textMessage)
             jsonObject.put("as_user", false)
             jsonObject.put("username", "Bug Reporter")
@@ -50,6 +59,8 @@ class SendFile {
 
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast(e.localizedMessage ?: "Failed to log bug")
                     e.printStackTrace()
                 }
 
@@ -60,33 +71,26 @@ class SendFile {
                     Log.d(TAG, ok.toString())
                     // need to send thread_ts in case of slack_api
                     // uploadAttachment(apiFormData.file,"TimeStamp",apiData)
+
+                    Thread.sleep(10000)
                     uploadAttachment(apiFormData.file, threadTimestamp, apiDataModel)
                 }
             })
         }
 
-        fun uploadAttachment(file: File, ts: String, apiDataModel: ApiDataModel?) {
-            val uploadAttachmentUrl = "https://slack.com/api/files.upload"
-            val MEDIA_TYPE_PNG = MediaType.parse("application/octet-stream")
+        fun uploadAttachment(file: File, ts: String, apiDataModel: ApiResponseDataModel?) {
 
-            val jsonObject = JSONObject()
-            jsonObject.put("as_user", false)
-            jsonObject.put("username", "Admin")
-            jsonObject.put("icon_emoji", ":male_vampire:")
-            jsonObject.put("thread_ts", ts)
-            val jsonBodyRequest = RequestBody.create(
-                MediaType.parse("application/json"),
-                jsonObject.toString()
-            )
+            val uploadAttachmentUrl = "https://slack.com/api/files.upload"
+            val MEDIA_TYPE = MediaType.parse("application/octet-stream")
 
             val req: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM)
                 .addFormDataPart(
                     "file",
-                    "UC_BUG",
-                    RequestBody.create(MEDIA_TYPE_PNG, file)
+                    file.name,
+                    RequestBody.create(MEDIA_TYPE, file)
                 )
-                .addFormDataPart("channels", "CFD5QKJE9")
-//                .addPart(jsonBodyRequest)
+                .addFormDataPart("channels", channelID)
+                .addFormDataPart("initial_comment", "Attachment added")
                 .addFormDataPart("thread_ts", ts).build()
 
             val request = Request.Builder()
@@ -99,35 +103,38 @@ class SendFile {
 
             val response = client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast(e.localizedMessage ?: "Failed to upload attachment")
                     e.printStackTrace()
                 }
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
+                    Log.d(TAG, response.body().toString())
                     // call UploadApiData Function
-//                    if (apiDataModel != null)
-//                        uploadApiData(apiDataModel, ts)
+                    if (apiDataModel != null)
+                        uploadApiData(apiDataModel, ts)
                 }
             })
 
         }
 
-        fun uploadApiData(apiData: ApiDataModel, ts: String) {
+        fun uploadApiData(apiData: ApiResponseDataModel, ts: String) {
             val client = OkHttpClient()
             val uploadBugUrl = "https://slack.com/api/chat.postMessage"
 
             val textMessage =
                 String.format(
                     "*`API URL`* %s" +
-                            "*`API Request`* %s" +
-                            "*`API Response`* %s",
+                            " *`API Request`* %s" +
+                            " *`API Response`* %s",
                     apiData.apiUrl,
                     apiData.apiRequest,
                     apiData.apiResponse
                 )
 
             val jsonObject = JSONObject()
-            jsonObject.put("channel", "CFD5QKJE9")
+            jsonObject.put("channel", channelID)
             jsonObject.put("text", textMessage)
             jsonObject.put("thread_ts", ts)
             jsonObject.put("as_user", false)
@@ -147,12 +154,16 @@ class SendFile {
             client.newCall(request).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     e.printStackTrace()
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast(e.localizedMessage ?: "Failed to upload text message")
                 }
 
                 @Throws(IOException::class)
                 override fun onResponse(call: Call, response: Response) {
                     val ok = response.body()?.string()
                     Log.d(TAG, ok.toString())
+                    listenr?.dismissProgressDialog()
+                    listenr?.showToast("Bug filled successfully")
                 }
             })
         }
